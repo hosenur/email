@@ -1,0 +1,6 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "matrix",
+  "model": "github/claude-haiku-4-5",
+  "autoupdate": true
+}
