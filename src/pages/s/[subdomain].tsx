@@ -62,7 +62,7 @@ function EmailViewer({ emailId }: { emailId: string }) {
   const [, setSelectedId] = useQueryState("id");
   const { data, error, isLoading } = useSWR<EmailResponse>(
     `/api/emails/${emailId}`,
-    fetcher
+    fetcher,
   );
 
   if (isLoading) {

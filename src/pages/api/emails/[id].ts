@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,24 +17,14 @@ export default async function handler(
     return res.status(400).json({ error: "Email ID is required" });
   }
 
-  // Get session token from cookies
-  const sessionToken =
-    req.cookies["better-auth.session_token"] ||
-    req.cookies["__Secure-better-auth.session_token"];
-
-  if (!sessionToken) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
   try {
-    // Get the session and user
-    const session = await prisma.session.findUnique({
-      where: { token: sessionToken },
-      include: { user: true },
+    // Get session using better-auth
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
     });
 
-    if (!session || session.expiresAt < new Date()) {
-      return res.status(401).json({ error: "Session expired" });
+    if (!session) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
     const userEmail = session.user.email;
