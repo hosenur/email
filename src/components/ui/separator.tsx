@@ -1,7 +1,14 @@
-import { Separator as Divider, type SeparatorProps } from "react-aria-components"
-import { twMerge } from "tailwind-merge"
+import {
+  Separator as Divider,
+  type SeparatorProps,
+} from "react-aria-components";
+import { twMerge } from "tailwind-merge";
 
-const Separator = ({ orientation = "horizontal", className, ...props }: SeparatorProps) => {
+const Separator = ({
+  orientation = "horizontal",
+  className,
+  ...props
+}: SeparatorProps) => {
   return (
     <Divider
       className={twMerge(
@@ -12,8 +19,8 @@ const Separator = ({ orientation = "horizontal", className, ...props }: Separato
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-export type { SeparatorProps }
-export { Separator }
+export type { SeparatorProps };
+export { Separator };

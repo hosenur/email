@@ -1,6 +1,6 @@
-import { TextArea, type TextAreaProps } from "react-aria-components"
-import { twJoin } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
+import { TextArea, type TextAreaProps } from "react-aria-components";
+import { twJoin } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
 
 export function Textarea({ className, ...props }: TextAreaProps) {
   return (
@@ -22,5 +22,5 @@ export function Textarea({ className, ...props }: TextAreaProps) {
         )}
       />
     </span>
-  )
+  );
 }

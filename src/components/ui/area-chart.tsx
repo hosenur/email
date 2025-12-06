@@ -1,6 +1,9 @@
-import { type ComponentProps, Fragment, useId } from "react"
-import { Area, AreaChart as AreaChartPrimitive } from "recharts"
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
+import { type ComponentProps, Fragment, useId } from "react";
+import { Area, AreaChart as AreaChartPrimitive } from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import {
   type BaseChartProps,
   CartesianGrid,
@@ -15,14 +18,19 @@ import {
   valueToPercent,
   XAxis,
   YAxis,
-} from "./chart"
+} from "./chart";
 
-export interface AreaChartProps<TValue extends ValueType, TName extends NameType>
-  extends BaseChartProps<TValue, TName> {
-  chartProps?: Omit<ComponentProps<typeof AreaChartPrimitive>, "data" | "stackOffset">
-  areaProps?: Partial<ComponentProps<typeof Area>>
-  connectNulls?: boolean
-  fillType?: "gradient" | "solid" | "none"
+export interface AreaChartProps<
+  TValue extends ValueType,
+  TName extends NameType,
+> extends BaseChartProps<TValue, TName> {
+  chartProps?: Omit<
+    ComponentProps<typeof AreaChartPrimitive>,
+    "data" | "stackOffset"
+  >;
+  areaProps?: Partial<ComponentProps<typeof Area>>;
+  connectNulls?: boolean;
+  fillType?: "gradient" | "solid" | "none";
 }
 
 export function AreaChart<TValue extends ValueType, TName extends NameType>({
@@ -64,41 +72,45 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
   chartProps,
   ...props
 }: AreaChartProps<TValue, TName>) {
-  const categoryColors = constructCategoryColors(Object.keys(config), colors)
-  const stacked = type === "stacked" || type === "percent"
-  const areaId = useId()
+  const categoryColors = constructCategoryColors(Object.keys(config), colors);
+  const stacked = type === "stacked" || type === "percent";
+  const areaId = useId();
   const getFillContent = ({
     fillType,
     activeLegend,
     category,
   }: {
-    fillType: AreaChartProps<TValue, TName>["fillType"]
-    activeLegend: string | null
-    category: string
+    fillType: AreaChartProps<TValue, TName>["fillType"];
+    activeLegend: string | null;
+    category: string;
   }) => {
-    const stopOpacity = activeLegend && activeLegend !== category ? 0.1 : 0.5
+    const stopOpacity = activeLegend && activeLegend !== category ? 0.1 : 0.5;
 
     switch (fillType) {
       case "none":
-        return <stop stopColor="currentColor" stopOpacity={0} />
+        return <stop stopColor="currentColor" stopOpacity={0} />;
       case "gradient":
         return (
           <>
-            <stop offset="5%" stopColor="currentColor" stopOpacity={stopOpacity} />
+            <stop
+              offset="5%"
+              stopColor="currentColor"
+              stopOpacity={stopOpacity}
+            />
             <stop offset="95%" stopColor="currentColor" stopOpacity={0} />
           </>
-        )
+        );
       default:
-        return <stop stopColor="currentColor" stopOpacity={stopOpacity} />
+        return <stop stopColor="currentColor" stopOpacity={stopOpacity} />;
     }
-  }
+  };
 
   return (
     <Chart config={config} data={data} dataKey={dataKey} {...props}>
       {({ onLegendSelect, selectedLegend }) => (
         <AreaChartPrimitive
           onClick={() => {
-            onLegendSelect(null)
+            onLegendSelect(null);
           }}
           data={data}
           margin={{
@@ -110,7 +122,9 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
           stackOffset={type === "percent" ? "expand" : undefined}
           {...chartProps}
         >
-          {!hideGridLines && <CartesianGrid {...cartesianGridProps} strokeDasharray="3 3" />}
+          {!hideGridLines && (
+            <CartesianGrid {...cartesianGridProps} strokeDasharray="3 3" />
+          )}
           <XAxis
             className="**:[text]:fill-muted-fg"
             hide={hideXAxis}
@@ -127,7 +141,9 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
 
           {legend && (
             <ChartLegend
-              content={typeof legend === "boolean" ? <ChartLegendContent /> : legend}
+              content={
+                typeof legend === "boolean" ? <ChartLegendContent /> : legend
+              }
               {...legendProps}
             />
           )}
@@ -158,16 +174,19 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
 
           {!children
             ? Object.entries(config).map(([category, values]) => {
-                const categoryId = `${areaId}-${category.replace(/[^a-zA-Z0-9]/g, "")}`
+                const categoryId = `${areaId}-${category.replace(/[^a-zA-Z0-9]/g, "")}`;
 
-                const strokeOpacity = selectedLegend && selectedLegend !== category ? 0.1 : 1
+                const strokeOpacity =
+                  selectedLegend && selectedLegend !== category ? 0.1 : 1;
 
                 return (
                   <Fragment key={categoryId}>
                     <defs>
                       <linearGradient
                         style={{
-                          color: getColorValue(values.color || categoryColors.get(category)),
+                          color: getColorValue(
+                            values.color || categoryColors.get(category),
+                          ),
                         }}
                         id={categoryId}
                         x1="0"
@@ -186,7 +205,9 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
                       dot={false}
                       name={category}
                       dataKey={category}
-                      stroke={getColorValue(values.color || categoryColors.get(category))}
+                      stroke={getColorValue(
+                        values.color || categoryColors.get(category),
+                      )}
                       style={{
                         strokeWidth: 2,
                         strokeOpacity,
@@ -200,11 +221,11 @@ export function AreaChart<TValue extends ValueType, TName extends NameType>({
                       {...areaProps}
                     />
                   </Fragment>
-                )
+                );
               })
             : children}
         </AreaChartPrimitive>
       )}
     </Chart>
-  )
+  );
 }

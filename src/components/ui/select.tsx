@@ -1,25 +1,32 @@
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import type {
   ListBoxProps,
   PopoverProps,
   SelectProps as SelectPrimitiveProps,
-} from "react-aria-components"
-import { Button, ListBox, Select as SelectPrimitive, SelectValue } from "react-aria-components"
-import { twJoin } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import {
+  Button,
+  ListBox,
+  Select as SelectPrimitive,
+  SelectValue,
+} from "react-aria-components";
+import { twJoin } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
 import {
   DropdownDescription,
   DropdownItem,
   DropdownLabel,
   DropdownSection,
   DropdownSeparator,
-} from "./dropdown"
-import { fieldStyles } from "./field"
-import { PopoverContent } from "./popover"
+} from "./dropdown";
+import { fieldStyles } from "./field";
+import { PopoverContent } from "./popover";
 
-interface SelectProps<T extends object, M extends "single" | "multiple" = "single">
-  extends SelectPrimitiveProps<T, M> {
-  items?: Iterable<T, M>
+interface SelectProps<
+  T extends object,
+  M extends "single" | "multiple" = "single",
+> extends SelectPrimitiveProps<T, M> {
+  items?: Iterable<T, M>;
 }
 
 const Select = <T extends object, M extends "single" | "multiple" = "single">({
@@ -32,13 +39,13 @@ const Select = <T extends object, M extends "single" | "multiple" = "single">({
       className={cx(fieldStyles({ className: "group/select" }), className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 interface SelectListProps<T extends object>
   extends Omit<ListBoxProps<T>, "layout" | "orientation"> {
-  items?: Iterable<T>
-  popover?: Omit<PopoverProps, "children">
+  items?: Iterable<T>;
+  popover?: Omit<PopoverProps, "children">;
 }
 
 const SelectContent = <T extends object>({
@@ -67,15 +74,19 @@ const SelectContent = <T extends object>({
         {...props}
       />
     </PopoverContent>
-  )
-}
+  );
+};
 
 interface SelectTriggerProps extends React.ComponentProps<typeof Button> {
-  prefix?: React.ReactNode
-  className?: string
+  prefix?: React.ReactNode;
+  className?: string;
 }
 
-const SelectTrigger = ({ children, className, ...props }: SelectTriggerProps) => {
+const SelectTrigger = ({
+  children,
+  className,
+  ...props
+}: SelectTriggerProps) => {
   return (
     <span data-slot="control" className="relative block w-full">
       <Button
@@ -96,7 +107,9 @@ const SelectTrigger = ({ children, className, ...props }: SelectTriggerProps) =>
       >
         {(values) => (
           <>
-            {props.prefix && <span className="text-muted-fg">{props.prefix}</span>}
+            {props.prefix && (
+              <span className="text-muted-fg">{props.prefix}</span>
+            )}
             {typeof children === "function" ? children(values) : children}
 
             {!children && (
@@ -121,14 +134,14 @@ const SelectTrigger = ({ children, className, ...props }: SelectTriggerProps) =>
         )}
       </Button>
     </span>
-  )
-}
+  );
+};
 
-const SelectSection = DropdownSection
-const SelectSeparator = DropdownSeparator
-const SelectLabel = DropdownLabel
-const SelectDescription = DropdownDescription
-const SelectItem = DropdownItem
+const SelectSection = DropdownSection;
+const SelectSeparator = DropdownSeparator;
+const SelectLabel = DropdownLabel;
+const SelectDescription = DropdownDescription;
+const SelectItem = DropdownItem;
 
 export {
   Select,
@@ -139,5 +152,5 @@ export {
   SelectSection,
   SelectTrigger,
   SelectContent,
-}
-export type { SelectProps, SelectTriggerProps }
+};
+export type { SelectProps, SelectTriggerProps };

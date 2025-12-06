@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { Toaster as ToasterPrimitive, type ToasterProps } from "sonner"
-import { twJoin } from "tailwind-merge"
+import { useTheme } from "next-themes";
+import { Toaster as ToasterPrimitive, type ToasterProps } from "sonner";
+import { twJoin } from "tailwind-merge";
 
 export function Toast(props: ToasterProps) {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
   return (
     <ToasterPrimitive
       theme={theme as ToasterProps["theme"]}
@@ -24,23 +24,27 @@ export function Toast(props: ToasterProps) {
           "--normal-border": "var(--color-border)",
 
           "--success-bg": "var(--color-success-subtle)",
-          "--success-border": "color-mix(in oklab, var(--success-subtle-fg) 20%, transparent)",
+          "--success-border":
+            "color-mix(in oklab, var(--success-subtle-fg) 20%, transparent)",
           "--success-text": "var(--color-success-subtle-fg)",
 
           "--error-bg": "var(--color-danger-subtle)",
-          "--error-border": "color-mix(in oklab, var(--danger-subtle-fg) 20%, transparent)",
+          "--error-border":
+            "color-mix(in oklab, var(--danger-subtle-fg) 20%, transparent)",
           "--error-text": "var(--color-danger-subtle-fg)",
 
           "--warning-bg": "var(--color-warning-subtle)",
-          "--warning-border": "color-mix(in oklab, var(--warning-subtle-fg) 20%, transparent)",
+          "--warning-border":
+            "color-mix(in oklab, var(--warning-subtle-fg) 20%, transparent)",
           "--warning-text": "var(--color-warning-subtle-fg)",
 
           "--info-bg": "var(--color-info-subtle)",
-          "--info-border": "color-mix(in oklab, var(--info-subtle-fg) 20%, transparent)",
+          "--info-border":
+            "color-mix(in oklab, var(--info-subtle-fg) 20%, transparent)",
           "--info-text": "var(--color-info-subtle-fg)",
         } as React.CSSProperties
       }
       {...props}
     />
-  )
+  );
 }

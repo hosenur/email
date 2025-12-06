@@ -1,19 +1,23 @@
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
-import * as React from "react"
-import { twMerge } from "tailwind-merge"
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import * as React from "react";
+import { twMerge } from "tailwind-merge";
 
 const ScrollArea = React.forwardRef<
   React.ComponentRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
-  <ScrollAreaPrimitive.Root ref={ref} className={twMerge("overflow-hidden", className)} {...props}>
+  <ScrollAreaPrimitive.Root
+    ref={ref}
+    className={twMerge("overflow-hidden", className)}
+    {...props}
+  >
     {children}
     <ScrollAreaPrimitive.Corner />
     <ScrollBar orientation="vertical" />
   </ScrollAreaPrimitive.Root>
-))
+));
 
-ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
+ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollViewport = React.forwardRef<
   React.ComponentRef<typeof ScrollAreaPrimitive.Viewport>,
@@ -26,9 +30,9 @@ const ScrollViewport = React.forwardRef<
   >
     {children}
   </ScrollAreaPrimitive.Viewport>
-))
+));
 
-ScrollViewport.displayName = ScrollAreaPrimitive.Viewport.displayName
+ScrollViewport.displayName = ScrollAreaPrimitive.Viewport.displayName;
 
 const ScrollBar = React.forwardRef<
   React.ComponentRef<typeof ScrollAreaPrimitive.Scrollbar>,
@@ -47,7 +51,7 @@ const ScrollBar = React.forwardRef<
   >
     <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-fd-border" />
   </ScrollAreaPrimitive.Scrollbar>
-))
-ScrollBar.displayName = ScrollAreaPrimitive.Scrollbar.displayName
+));
+ScrollBar.displayName = ScrollAreaPrimitive.Scrollbar.displayName;
 
-export { ScrollArea, ScrollBar, ScrollViewport }
+export { ScrollArea, ScrollBar, ScrollViewport };

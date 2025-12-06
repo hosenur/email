@@ -1,10 +1,10 @@
-import { use } from "react"
+import { use } from "react";
 import type {
   ButtonProps,
   DisclosureGroupProps,
   DisclosurePanelProps,
   DisclosureProps,
-} from "react-aria-components"
+} from "react-aria-components";
 import {
   Button,
   composeRenderProps,
@@ -13,9 +13,9 @@ import {
   Disclosure as PrimitiveDisclosure,
   DisclosureGroup as PrimitiveDisclosureGroup,
   DisclosurePanel as PrimitiveDisclosurePanel,
-} from "react-aria-components"
-import { twJoin, twMerge } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { twJoin, twMerge } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
 
 const DisclosureGroup = ({ className, ...props }: DisclosureGroupProps) => {
   return (
@@ -36,32 +36,38 @@ const DisclosureGroup = ({ className, ...props }: DisclosureGroupProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 const Disclosure = ({ className, ...props }: DisclosureProps) => {
   return (
     <PrimitiveDisclosure
-      className={composeRenderProps(className, (className, { isExpanded, isFocusVisibleWithin }) =>
-        twMerge(
-          "group/disclosure-item inset-ring inset-ring-(--disclosure-collapsed-border,transparent) w-full rounded-(--disclosure-radius,--spacing(0)) bg-(--disclosure-collapsed-bg,transparent) duration-200",
-          (isExpanded || isFocusVisibleWithin) &&
-            "inset-ring-(--disclosure-expanded-border,transparent) bg-(--disclosure-expanded-bg)",
-          "has-data-hovered:inset-ring-(--disclosure-expanded-border,transparent) has-data-hovered:bg-(--disclosure-expanded-bg)",
-          className,
-        ),
+      className={composeRenderProps(
+        className,
+        (className, { isExpanded, isFocusVisibleWithin }) =>
+          twMerge(
+            "group/disclosure-item inset-ring inset-ring-(--disclosure-collapsed-border,transparent) w-full rounded-(--disclosure-radius,--spacing(0)) bg-(--disclosure-collapsed-bg,transparent) duration-200",
+            (isExpanded || isFocusVisibleWithin) &&
+              "inset-ring-(--disclosure-expanded-border,transparent) bg-(--disclosure-expanded-bg)",
+            "has-data-hovered:inset-ring-(--disclosure-expanded-border,transparent) has-data-hovered:bg-(--disclosure-expanded-bg)",
+            className,
+          ),
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 interface DisclosureTriggerProps extends ButtonProps {
-  ref?: React.Ref<HTMLButtonElement>
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
-const DisclosureTrigger = ({ ref, className, ...props }: DisclosureTriggerProps) => {
-  const state = use(DisclosureStateContext)!
+const DisclosureTrigger = ({
+  ref,
+  className,
+  ...props
+}: DisclosureTriggerProps) => {
+  const state = use(DisclosureStateContext)!;
   return (
     <Heading>
       <Button
@@ -83,7 +89,9 @@ const DisclosureTrigger = ({ ref, className, ...props }: DisclosureTriggerProps)
       >
         {(values) => (
           <>
-            {typeof props.children === "function" ? props.children(values) : props.children}
+            {typeof props.children === "function"
+              ? props.children(values)
+              : props.children}
             <span
               data-slot="disclosure-indicator"
               className="-mr-[calc(var(--disclosure-gutter-x,--spacing(0))-(--spacing(3)))] pointer-events-none relative ml-(--disclosure-gutter-x,--spacing(0)) flex size-6 items-center justify-center"
@@ -100,8 +108,8 @@ const DisclosureTrigger = ({ ref, className, ...props }: DisclosureTriggerProps)
         )}
       </Button>
     </Heading>
-  )
-}
+  );
+};
 
 const DisclosurePanel = ({ className, ...props }: DisclosurePanelProps) => {
   return (
@@ -119,7 +127,7 @@ const DisclosurePanel = ({ className, ...props }: DisclosurePanelProps) => {
         {props.children}
       </div>
     </PrimitiveDisclosurePanel>
-  )
-}
+  );
+};
 
-export { DisclosureGroup, Disclosure, DisclosureTrigger, DisclosurePanel }
+export { DisclosureGroup, Disclosure, DisclosureTrigger, DisclosurePanel };

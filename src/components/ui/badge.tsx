@@ -1,4 +1,4 @@
-import { tv, type VariantProps } from "tailwind-variants"
+import { tv, type VariantProps } from "tailwind-variants";
 
 const badgeStyles = tv({
   base: [
@@ -21,7 +21,8 @@ const badgeStyles = tv({
         "[--badge-bg:var(--color-warning-subtle)] [--badge-fg:var(--color-warning-subtle-fg)] [--badge-overlay:var(--color-warning)]/20",
       danger:
         "[--badge-bg:var(--color-danger-subtle)] [--badge-fg:var(--color-danger-subtle-fg)] [--badge-overlay:var(--color-danger)]/20",
-      outline: "[--badge-overlay:var(--color-secondary)]/20 [--badge-ring:var(--color-border)]",
+      outline:
+        "[--badge-overlay:var(--color-secondary)]/20 [--badge-ring:var(--color-border)]",
     },
     isCircle: {
       true: "rounded-full px-2",
@@ -32,22 +33,28 @@ const badgeStyles = tv({
     intent: "primary",
     isCircle: true,
   },
-})
+});
 
 interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeStyles> {
-  className?: string
-  children: React.ReactNode
+  className?: string;
+  children: React.ReactNode;
 }
 
-const Badge = ({ children, intent, isCircle = true, className, ...props }: BadgeProps) => {
+const Badge = ({
+  children,
+  intent,
+  isCircle = true,
+  className,
+  ...props
+}: BadgeProps) => {
   return (
     <span {...props} className={badgeStyles({ intent, isCircle, className })}>
       {children}
     </span>
-  )
-}
+  );
+};
 
-export type { BadgeProps }
-export { Badge, badgeStyles }
+export type { BadgeProps };
+export { Badge, badgeStyles };

@@ -3,11 +3,11 @@ import {
   type GroupProps,
   Input as InputPrimitive,
   type InputProps as PrimitiveInputProps,
-} from "react-aria-components"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { cx } from "@/lib/primitive";
 
 interface InputProps extends PrimitiveInputProps {
-  ref?: React.RefObject<HTMLInputElement>
+  ref?: React.RefObject<HTMLInputElement>;
 }
 
 export function Input({ className, ref, ...props }: InputProps) {
@@ -30,7 +30,7 @@ export function Input({ className, ref, ...props }: InputProps) {
         {...props}
       />
     </span>
-  )
+  );
 }
 
 export function InputGroup({ className, ...props }: GroupProps) {
@@ -70,5 +70,5 @@ export function InputGroup({ className, ...props }: GroupProps) {
       )}
       {...props}
     />
-  )
+  );
 }

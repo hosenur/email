@@ -1,8 +1,11 @@
-"use client"
+"use client";
 
-import type { ComponentProps } from "react"
-import { Cell, Pie, PieChart as PieChartPrimitive } from "recharts"
-import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent"
+import type { ComponentProps } from "react";
+import { Cell, Pie, PieChart as PieChartPrimitive } from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import {
   type BaseChartProps,
   Chart,
@@ -10,19 +13,21 @@ import {
   ChartTooltipContent,
   DEFAULT_COLORS,
   getColorValue,
-} from "./chart"
+} from "./chart";
 
-const sumNumericArray = (arr: number[]): number => arr.reduce((sum, num) => sum + num, 0)
+const sumNumericArray = (arr: number[]): number =>
+  arr.reduce((sum, num) => sum + num, 0);
 
 const calculateDefaultLabel = (data: any[], valueKey: string): number =>
-  sumNumericArray(data.map((dataPoint) => dataPoint[valueKey]))
+  sumNumericArray(data.map((dataPoint) => dataPoint[valueKey]));
 
 const parseLabelInput = (
   labelInput: string | undefined,
   valueFormatter: (value: number) => string,
   data: any[],
   valueKey: string,
-): string => labelInput || valueFormatter(calculateDefaultLabel(data, valueKey))
+): string =>
+  labelInput || valueFormatter(calculateDefaultLabel(data, valueKey));
 
 interface PieChartProps<TValue extends ValueType, TName extends NameType>
   extends Omit<
@@ -36,14 +41,17 @@ interface PieChartProps<TValue extends ValueType, TName extends NameType>
     | "legend"
     | "legendProps"
   > {
-  variant?: "pie" | "donut"
-  nameKey?: string
+  variant?: "pie" | "donut";
+  nameKey?: string;
 
-  chartProps?: Omit<ComponentProps<typeof PieChartPrimitive>, "data" | "stackOffset">
+  chartProps?: Omit<
+    ComponentProps<typeof PieChartPrimitive>,
+    "data" | "stackOffset"
+  >;
 
-  label?: string
-  showLabel?: boolean
-  pieProps?: Omit<ComponentProps<typeof Pie>, "data" | "dataKey" | "name">
+  label?: string;
+  showLabel?: boolean;
+  pieProps?: Omit<ComponentProps<typeof Pie>, "data" | "dataKey" | "name">;
 }
 
 const PieChart = <TValue extends ValueType, TName extends NameType>({
@@ -68,15 +76,26 @@ const PieChart = <TValue extends ValueType, TName extends NameType>({
   pieProps,
   ...props
 }: PieChartProps<TValue, TName>) => {
-  const parsedLabelInput = parseLabelInput(label, valueFormatter, data, dataKey)
+  const parsedLabelInput = parseLabelInput(
+    label,
+    valueFormatter,
+    data,
+    dataKey,
+  );
 
   return (
-    <Chart config={config} data={data} layout="radial" dataKey={dataKey} {...props}>
+    <Chart
+      config={config}
+      data={data}
+      layout="radial"
+      dataKey={dataKey}
+      {...props}
+    >
       {({ onLegendSelect }) => (
         <PieChartPrimitive
           data={data}
           onClick={() => {
-            onLegendSelect(null)
+            onLegendSelect(null);
           }}
           margin={{
             bottom: 0,
@@ -131,7 +150,11 @@ const PieChart = <TValue extends ValueType, TName extends NameType>({
             <ChartTooltip
               content={
                 typeof tooltip === "boolean" ? (
-                  <ChartTooltipContent hideLabel labelSeparator={false} accessibilityLayer />
+                  <ChartTooltipContent
+                    hideLabel
+                    labelSeparator={false}
+                    accessibilityLayer
+                  />
                 ) : (
                   tooltip
                 )
@@ -142,8 +165,8 @@ const PieChart = <TValue extends ValueType, TName extends NameType>({
         </PieChartPrimitive>
       )}
     </Chart>
-  )
-}
+  );
+};
 
-export type { PieChartProps }
-export { PieChart }
+export type { PieChartProps };
+export { PieChart };

@@ -1,35 +1,43 @@
-"use client"
+"use client";
 
-import { createContext, use } from "react"
+import { createContext, use } from "react";
 import {
   composeRenderProps,
   ToggleButton,
   ToggleButtonGroup,
   type ToggleButtonGroupProps,
   type ToggleButtonProps,
-} from "react-aria-components"
-import { twMerge } from "tailwind-merge"
-import { tv } from "tailwind-variants"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { twMerge } from "tailwind-merge";
+import { tv } from "tailwind-variants";
+import { cx } from "@/lib/primitive";
 
-type ToggleSize = "xs" | "sm" | "md" | "lg" | "sq-xs" | "sq-sm" | "sq-md" | "sq-lg"
+type ToggleSize =
+  | "xs"
+  | "sm"
+  | "md"
+  | "lg"
+  | "sq-xs"
+  | "sq-sm"
+  | "sq-md"
+  | "sq-lg";
 
 interface ToggleGroupContextValue
   extends Pick<ToggleButtonGroupProps, "selectionMode" | "orientation"> {
-  size?: ToggleSize
+  size?: ToggleSize;
 }
 
 const ToggleGroupContext = createContext<ToggleGroupContextValue>({
   size: "md",
   selectionMode: "single",
   orientation: "horizontal",
-})
+});
 
-const useToggleGroupContext = () => use(ToggleGroupContext)
+const useToggleGroupContext = () => use(ToggleGroupContext);
 
 interface ToggleGroupProps extends ToggleButtonGroupProps {
-  size?: ToggleSize
-  isCircle?: boolean
+  size?: ToggleSize;
+  isCircle?: boolean;
 }
 
 const ToggleGroup = ({
@@ -68,11 +76,11 @@ const ToggleGroup = ({
         {...props}
       />
     </ToggleGroupContext.Provider>
-  )
-}
+  );
+};
 
 interface ToggleGroupItemProps extends ToggleButtonProps {
-  size?: ToggleSize
+  size?: ToggleSize;
 }
 
 const toggleGroupItemStyles = tv({
@@ -152,10 +160,10 @@ const toggleGroupItemStyles = tv({
         "not-first:-mt-px first:rounded-t-[calc(var(--toggle-group-radius)-var(--toggle-gutter))] last:rounded-b-[calc(var(--toggle-group-radius)-var(--toggle-gutter))]",
     },
   ],
-})
+});
 
 const ToggleGroupItem = ({ className, ...props }: ToggleGroupItemProps) => {
-  const { size, selectionMode, orientation } = useToggleGroupContext()
+  const { size, selectionMode, orientation } = useToggleGroupContext();
 
   return (
     <ToggleButton
@@ -173,8 +181,8 @@ const ToggleGroupItem = ({ className, ...props }: ToggleGroupItemProps) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-export type { ToggleGroupProps, ToggleGroupItemProps }
-export { ToggleGroup, ToggleGroupItem }
+export type { ToggleGroupProps, ToggleGroupItemProps };
+export { ToggleGroup, ToggleGroupItem };

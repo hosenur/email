@@ -1,7 +1,7 @@
-import type { ToggleButtonProps } from "react-aria-components"
-import { composeRenderProps, ToggleButton } from "react-aria-components"
-import { twMerge } from "tailwind-merge"
-import { tv, type VariantProps } from "tailwind-variants"
+import type { ToggleButtonProps } from "react-aria-components";
+import { composeRenderProps, ToggleButton } from "react-aria-components";
+import { twMerge } from "tailwind-merge";
+import { tv, type VariantProps } from "tailwind-variants";
 
 export const toggleStyles = tv({
   base: [
@@ -71,12 +71,21 @@ export const toggleStyles = tv({
     size: "md",
     isCircle: false,
   },
-})
+});
 
-export interface ToggleProps extends ToggleButtonProps, VariantProps<typeof toggleStyles> {
-  ref?: React.Ref<HTMLButtonElement>
+export interface ToggleProps
+  extends ToggleButtonProps,
+    VariantProps<typeof toggleStyles> {
+  ref?: React.Ref<HTMLButtonElement>;
 }
-export function Toggle({ className, size, intent, isCircle, ref, ...props }: ToggleProps) {
+export function Toggle({
+  className,
+  size,
+  intent,
+  isCircle,
+  ref,
+  ...props
+}: ToggleProps) {
   return (
     <ToggleButton
       ref={ref}
@@ -93,5 +102,5 @@ export function Toggle({ className, size, intent, isCircle, ref, ...props }: Tog
       )}
       {...props}
     />
-  )
+  );
 }

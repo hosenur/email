@@ -1,44 +1,46 @@
-"use client"
+"use client";
 
-import { PlusIcon } from "@heroicons/react/20/solid"
-import React, { useMemo, useRef } from "react"
+import { PlusIcon } from "@heroicons/react/20/solid";
+import React, { useMemo, useRef } from "react";
 import {
   Autocomplete,
   Select,
   type SelectProps,
   SelectValue,
   useFilter,
-} from "react-aria-components"
-import { cx } from "@/lib/primitive"
-import { Button } from "./button"
-import { fieldStyles } from "./field"
-import { ListBox, ListBoxItem } from "./list-box"
-import { PopoverContent } from "./popover"
-import { SearchField, SearchInput } from "./search-field"
-import { Tag, TagGroup, TagList } from "./tag-group"
+} from "react-aria-components";
+import { cx } from "@/lib/primitive";
+import { Button } from "./button";
+import { fieldStyles } from "./field";
+import { ListBox, ListBoxItem } from "./list-box";
+import { PopoverContent } from "./popover";
+import { SearchField, SearchInput } from "./search-field";
+import { Tag, TagGroup, TagList } from "./tag-group";
 
 interface OptionBase {
-  id: string | number
-  name: string
+  id: string | number;
+  name: string;
 }
 
 interface MultipleSelectProps<T extends OptionBase>
   extends Omit<SelectProps<T, "multiple">, "selectionMode" | "children"> {
-  placeholder?: string
-  className?: string
-  children?: React.ReactNode
-  name?: string
+  placeholder?: string;
+  className?: string;
+  children?: React.ReactNode;
+  name?: string;
 }
 
 interface MultipleSelectContentProps<T extends OptionBase> {
-  items: Iterable<T>
-  children: (item: T) => React.ReactNode
+  items: Iterable<T>;
+  children: (item: T) => React.ReactNode;
 }
 
-function MultipleSelectContent<T extends OptionBase>(_props: MultipleSelectContentProps<T>) {
-  return null
+function MultipleSelectContent<T extends OptionBase>(
+  _props: MultipleSelectContentProps<T>,
+) {
+  return null;
 }
-;(MultipleSelectContent as any).displayName = "MultipleSelectContent"
+(MultipleSelectContent as any).displayName = "MultipleSelectContent";
 
 function MultipleSelect<T extends OptionBase>({
   placeholder = "No selected items",
@@ -47,20 +49,30 @@ function MultipleSelect<T extends OptionBase>({
   name,
   ...props
 }: MultipleSelectProps<T>) {
-  const triggerRef = useRef<HTMLDivElement | null>(null)
-  const { contains } = useFilter({ sensitivity: "base" })
+  const triggerRef = useRef<HTMLDivElement | null>(null);
+  const { contains } = useFilter({ sensitivity: "base" });
 
   const { before, after, list } = useMemo(() => {
-    const arr = React.Children.toArray(children)
+    const arr = React.Children.toArray(children);
     const idx = arr.findIndex(
-      (c) => React.isValidElement(c) && (c.type as any)?.displayName === "MultipleSelectContent",
-    )
+      (c) =>
+        React.isValidElement(c) &&
+        (c.type as any)?.displayName === "MultipleSelectContent",
+    );
     if (idx === -1) {
-      return { before: arr, after: [], list: null as null | MultipleSelectContentProps<T> }
+      return {
+        before: arr,
+        after: [],
+        list: null as null | MultipleSelectContentProps<T>,
+      };
     }
-    const el = arr[idx] as React.ReactElement<MultipleSelectContentProps<T>>
-    return { before: arr.slice(0, idx), after: arr.slice(idx + 1), list: el.props }
-  }, [children])
+    const el = arr[idx] as React.ReactElement<MultipleSelectContentProps<T>>;
+    return {
+      before: arr.slice(0, idx),
+      after: arr.slice(idx + 1),
+      list: el.props,
+    };
+  }, [children]);
 
   return (
     <Select
@@ -84,14 +96,16 @@ function MultipleSelect<T extends OptionBase>({
                   aria-label="Selected items"
                   onRemove={(keys) => {
                     if (Array.isArray(state.value)) {
-                      state.setValue(state.value.filter((k) => !keys.has(k)))
+                      state.setValue(state.value.filter((k) => !keys.has(k)));
                     }
                   }}
                 >
                   <TagList
                     items={selectedItems.filter((i) => i != null)}
                     renderEmptyState={() => (
-                      <i className="pl-2 text-muted-fg text-sm">{placeholder}</i>
+                      <i className="pl-2 text-muted-fg text-sm">
+                        {placeholder}
+                      </i>
                     )}
                   >
                     {(item) => <Tag className="rounded-md">{item.name}</Tag>}
@@ -128,9 +142,9 @@ function MultipleSelect<T extends OptionBase>({
       )}
       {after}
     </Select>
-  )
+  );
 }
 
-const MultipleSelectItem = ListBoxItem
+const MultipleSelectItem = ListBoxItem;
 
-export { MultipleSelect, MultipleSelectItem, MultipleSelectContent }
+export { MultipleSelect, MultipleSelectItem, MultipleSelectContent };

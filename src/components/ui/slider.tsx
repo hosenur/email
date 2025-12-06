@@ -1,4 +1,4 @@
-import { use } from "react"
+import { use } from "react";
 import {
   Slider as PrimitiveSlider,
   SliderOutput as PrimitiveSliderOutput,
@@ -6,12 +6,20 @@ import {
   SliderTrack as PrimitiveSliderTrack,
   type SliderProps,
   SliderStateContext,
-} from "react-aria-components"
-import { twMerge } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { twMerge } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
 
-export function SliderGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className="flex items-center gap-x-3 *:data-[slot=icon]:size-5" {...props} />
+export function SliderGroup({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <div
+      className="flex items-center gap-x-3 *:data-[slot=icon]:size-5"
+      {...props}
+    />
+  );
 }
 
 export function Slider({ className, ...props }: SliderProps) {
@@ -26,7 +34,7 @@ export function Slider({ className, ...props }: SliderProps) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 export function SliderOutput({
@@ -38,7 +46,7 @@ export function SliderOutput({
       className={cx("font-medium text-base/6 sm:text-sm/6", className)}
       {...props}
     />
-  )
+  );
 }
 
 export function SliderThumb({
@@ -53,7 +61,7 @@ export function SliderThumb({
       )}
       {...props}
     />
-  )
+  );
 }
 
 export function SliderTrack({
@@ -85,19 +93,24 @@ export function SliderTrack({
         </>
       )}
     </PrimitiveSliderTrack>
-  )
+  );
 }
 
-export function SliderFill({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  const state = use(SliderStateContext)
-  const { orientation, getThumbPercent, values } = state || {}
+export function SliderFill({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const state = use(SliderStateContext);
+  const { orientation, getThumbPercent, values } = state || {};
 
   const getStyle = () => {
-    const percent0 = getThumbPercent ? getThumbPercent(0) * 100 : 0
-    const percent1 = getThumbPercent ? getThumbPercent(1) * 100 : 0
+    const percent0 = getThumbPercent ? getThumbPercent(0) * 100 : 0;
+    const percent1 = getThumbPercent ? getThumbPercent(1) * 100 : 0;
 
     if (values?.length === 1) {
-      return orientation === "horizontal" ? { width: `${percent0}%` } : { height: `${percent0}%` }
+      return orientation === "horizontal"
+        ? { width: `${percent0}%` }
+        : { height: `${percent0}%` };
     }
 
     return orientation === "horizontal"
@@ -108,8 +121,8 @@ export function SliderFill({ className, ...props }: React.HTMLAttributes<HTMLDiv
       : {
           bottom: `${percent0}%`,
           height: `${Math.abs(percent0 - percent1)}%`,
-        }
-  }
+        };
+  };
 
   return (
     <div
@@ -120,5 +133,5 @@ export function SliderFill({ className, ...props }: React.HTMLAttributes<HTMLDiv
         className,
       )}
     />
-  )
+  );
 }

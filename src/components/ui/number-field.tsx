@@ -1,15 +1,26 @@
-import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid"
-import type { ButtonProps, InputProps, NumberFieldProps } from "react-aria-components"
-import { Button, NumberField as NumberFieldPrimitive } from "react-aria-components"
-import { Input, InputGroup } from "@/components/ui/input"
-import { cx } from "@/lib/primitive"
-import { fieldStyles } from "./field"
+import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
+import type {
+  ButtonProps,
+  InputProps,
+  NumberFieldProps,
+} from "react-aria-components";
+import {
+  Button,
+  NumberField as NumberFieldPrimitive,
+} from "react-aria-components";
+import { Input, InputGroup } from "@/components/ui/input";
+import { cx } from "@/lib/primitive";
+import { fieldStyles } from "./field";
 
 const NumberField = ({ className, ...props }: NumberFieldProps) => {
   return (
-    <NumberFieldPrimitive {...props} data-slot="control" className={cx(fieldStyles(), className)} />
-  )
-}
+    <NumberFieldPrimitive
+      {...props}
+      data-slot="control"
+      className={cx(fieldStyles(), className)}
+    />
+  );
+};
 
 function NumberInput({ className, ...props }: InputProps) {
   return (
@@ -25,13 +36,13 @@ function NumberInput({ className, ...props }: InputProps) {
         </div>
       </div>
     </InputGroup>
-  )
+  );
 }
 
 interface StepperButtonProps extends ButtonProps {
-  slot: "increment" | "decrement"
-  emblemType?: "chevron" | "default"
-  className?: string
+  slot: "increment" | "decrement";
+  emblemType?: "chevron" | "default";
+  className?: string;
 }
 
 const StepperButton = ({
@@ -58,8 +69,8 @@ const StepperButton = ({
         <MinusIcon data-slot="stepper-icon" />
       )}
     </Button>
-  )
-}
+  );
+};
 
-export type { NumberFieldProps }
-export { NumberInput, NumberField }
+export type { NumberFieldProps };
+export { NumberInput, NumberField };

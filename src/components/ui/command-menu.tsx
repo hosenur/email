@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
-import { createContext, use, useEffect } from "react"
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { createContext, use, useEffect } from "react";
 import type {
   AutocompleteProps,
   CollectionRenderer,
   MenuProps,
   MenuTriggerProps,
   SearchFieldProps,
-} from "react-aria-components"
+} from "react-aria-components";
 import {
   Autocomplete,
   Button,
@@ -26,29 +26,39 @@ import {
   OverlayTriggerStateContext,
   SearchField,
   useFilter,
-} from "react-aria-components"
-import { twJoin, twMerge } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
-import { DropdownKeyboard } from "./dropdown"
-import { Loader } from "./loader"
-import { MenuDescription, MenuItem, MenuLabel, type MenuSectionProps, MenuSeparator } from "./menu"
+} from "react-aria-components";
+import { twJoin, twMerge } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
+import { DropdownKeyboard } from "./dropdown";
+import { Loader } from "./loader";
+import {
+  MenuDescription,
+  MenuItem,
+  MenuLabel,
+  type MenuSectionProps,
+  MenuSeparator,
+} from "./menu";
 
 interface CommandMenuProviderProps {
-  isPending?: boolean
-  escapeButton?: boolean
+  isPending?: boolean;
+  escapeButton?: boolean;
 }
 
-const CommandMenuContext = createContext<CommandMenuProviderProps | undefined>(undefined)
+const CommandMenuContext = createContext<CommandMenuProviderProps | undefined>(
+  undefined,
+);
 
 const useCommandMenu = () => {
-  const context = use(CommandMenuContext)
+  const context = use(CommandMenuContext);
 
   if (!context) {
-    throw new Error("useCommandMenu must be used within a <CommandMenuProvider />")
+    throw new Error(
+      "useCommandMenu must be used within a <CommandMenuProvider />",
+    );
   }
 
-  return context
-}
+  return context;
+};
 
 const sizes = {
   xs: "sm:max-w-xs",
@@ -58,15 +68,18 @@ const sizes = {
   xl: "sm:max-w-xl",
   "2xl": "sm:max-w-2xl",
   "3xl": "sm:max-w-3xl",
-}
+};
 
-interface CommandMenuProps extends AutocompleteProps, MenuTriggerProps, CommandMenuProviderProps {
-  isDismissable?: boolean
-  "aria-label"?: string
-  shortcut?: string
-  isBlurred?: boolean
-  className?: string
-  size?: keyof typeof sizes
+interface CommandMenuProps
+  extends AutocompleteProps,
+    MenuTriggerProps,
+    CommandMenuProviderProps {
+  isDismissable?: boolean;
+  "aria-label"?: string;
+  shortcut?: string;
+  isBlurred?: boolean;
+  className?: string;
+  size?: keyof typeof sizes;
 }
 
 const CommandMenu = ({
@@ -80,23 +93,28 @@ const CommandMenu = ({
   shortcut,
   ...props
 }: CommandMenuProps) => {
-  const { contains } = useFilter({ sensitivity: "base" })
-  const filter = (textValue: string, inputValue: string) => contains(textValue, inputValue)
+  const { contains } = useFilter({ sensitivity: "base" });
+  const filter = (textValue: string, inputValue: string) =>
+    contains(textValue, inputValue);
   useEffect(() => {
-    if (!shortcut) return
+    if (!shortcut) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === shortcut && (e.metaKey || e.ctrlKey)) {
-        onOpenChange?.(true)
+        onOpenChange?.(true);
       }
-    }
+    };
 
-    document.addEventListener("keydown", onKeyDown)
-    return () => document.removeEventListener("keydown", onKeyDown)
-  }, [shortcut, onOpenChange])
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [shortcut, onOpenChange]);
   return (
-    <CommandMenuContext value={{ isPending: isPending, escapeButton: escapeButton }}>
-      <ModalContext value={{ isOpen: props.isOpen, onOpenChange: onOpenChange }}>
+    <CommandMenuContext
+      value={{ isPending: isPending, escapeButton: escapeButton }}
+    >
+      <ModalContext
+        value={{ isOpen: props.isOpen, onOpenChange: onOpenChange }}
+      >
         <ModalOverlay
           isDismissable={isDismissable}
           className={twJoin(
@@ -129,17 +147,21 @@ const CommandMenu = ({
         </ModalOverlay>
       </ModalContext>
     </CommandMenuContext>
-  )
-}
+  );
+};
 
 interface CommandMenuSearchProps extends SearchFieldProps {
-  placeholder?: string
-  className?: string
+  placeholder?: string;
+  className?: string;
 }
 
-const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSearchProps) => {
-  const state = use(OverlayTriggerStateContext)!
-  const { isPending, escapeButton } = useCommandMenu()
+const CommandMenuSearch = ({
+  className,
+  placeholder,
+  ...props
+}: CommandMenuSearchProps) => {
+  const state = use(OverlayTriggerStateContext)!;
+  const { isPending, escapeButton } = useCommandMenu();
   return (
     <SearchField
       aria-label="Quick search"
@@ -168,10 +190,13 @@ const CommandMenuSearch = ({ className, placeholder, ...props }: CommandMenuSear
         </Button>
       )}
     </SearchField>
-  )
-}
+  );
+};
 
-const CommandMenuList = <T extends object>({ className, ...props }: MenuProps<T>) => {
+const CommandMenuList = <T extends object>({
+  className,
+  ...props
+}: MenuProps<T>) => {
   return (
     <CollectionRendererContext.Provider value={renderer}>
       <MenuPrimitive
@@ -182,8 +207,8 @@ const CommandMenuList = <T extends object>({ className, ...props }: MenuProps<T>
         {...props}
       />
     </CollectionRendererContext.Provider>
-  )
-}
+  );
+};
 
 const CommandMenuSection = <T extends object>({
   className,
@@ -206,49 +231,65 @@ const CommandMenuSection = <T extends object>({
       )}
       <Collection items={props.items}>{props.children}</Collection>
     </MenuSection>
-  )
-}
+  );
+};
 
-const CommandMenuItem = ({ className, ...props }: React.ComponentProps<typeof MenuItem>) => {
+const CommandMenuItem = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof MenuItem>) => {
   const textValue =
-    props.textValue || (typeof props.children === "string" ? props.children : undefined)
+    props.textValue ||
+    (typeof props.children === "string" ? props.children : undefined);
   return (
     <MenuItem
       {...props}
       textValue={textValue}
       className={cx("items-center gap-y-0.5", className)}
     />
-  )
-}
+  );
+};
 
-interface CommandMenuDescriptionProps extends React.ComponentProps<typeof MenuDescription> {}
+interface CommandMenuDescriptionProps
+  extends React.ComponentProps<typeof MenuDescription> {}
 
-const CommandMenuDescription = ({ className, ...props }: CommandMenuDescriptionProps) => {
+const CommandMenuDescription = ({
+  className,
+  ...props
+}: CommandMenuDescriptionProps) => {
   return (
-    <MenuDescription className={twMerge("col-start-3 row-start-1 ml-auto", className)} {...props} />
-  )
-}
+    <MenuDescription
+      className={twMerge("col-start-3 row-start-1 ml-auto", className)}
+      {...props}
+    />
+  );
+};
 
 const renderer: CollectionRenderer = {
   CollectionRoot(props) {
     if (props.collection.size === 0) {
       return (
-        <div className="col-span-full p-4 text-center text-muted-fg text-sm">No results found.</div>
-      )
+        <div className="col-span-full p-4 text-center text-muted-fg text-sm">
+          No results found.
+        </div>
+      );
     }
-    return <DefaultCollectionRenderer.CollectionRoot {...props} />
+    return <DefaultCollectionRenderer.CollectionRoot {...props} />;
   },
   CollectionBranch: DefaultCollectionRenderer.CollectionBranch,
-}
+};
 
 const CommandMenuSeparator = ({
   className,
   ...props
 }: React.ComponentProps<typeof MenuSeparator>) => (
   <MenuSeparator className={twMerge("-mx-2", className)} {...props} />
-)
+);
 
-const CommandMenuFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
+const CommandMenuFooter = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       className={twMerge(
@@ -258,10 +299,10 @@ const CommandMenuFooter = ({ className, ...props }: React.ComponentProps<"div">)
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-const CommandMenuLabel = MenuLabel
+const CommandMenuLabel = MenuLabel;
 const CommandMenuShortcut = ({
   className,
   ...props
@@ -273,9 +314,13 @@ const CommandMenuShortcut = ({
     )}
     {...props}
   />
-)
+);
 
-export type { CommandMenuProps, CommandMenuSearchProps, CommandMenuDescriptionProps }
+export type {
+  CommandMenuProps,
+  CommandMenuSearchProps,
+  CommandMenuDescriptionProps,
+};
 export {
   CommandMenu,
   CommandMenuSearch,
@@ -287,4 +332,4 @@ export {
   CommandMenuShortcut,
   CommandMenuSeparator,
   CommandMenuFooter,
-}
+};

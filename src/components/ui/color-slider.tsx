@@ -1,11 +1,15 @@
-import type { ColorSliderProps, SliderOutputProps, SliderTrackProps } from "react-aria-components"
+import type {
+  ColorSliderProps,
+  SliderOutputProps,
+  SliderTrackProps,
+} from "react-aria-components";
 import {
   ColorSlider as PrimitiveColorSlider,
   SliderOutput,
   SliderTrack,
-} from "react-aria-components"
-import { fieldStyles } from "@/components/ui/field"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { fieldStyles } from "@/components/ui/field";
+import { cx } from "@/lib/primitive";
 
 export function ColorSlider({ className, ...props }: ColorSliderProps) {
   return (
@@ -18,16 +22,19 @@ export function ColorSlider({ className, ...props }: ColorSliderProps) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 export function ColorSliderOutput({ className, ...props }: SliderOutputProps) {
   return (
     <SliderOutput
-      className={cx("orientation-vertical:hidden font-medium text-base/6 sm:text-sm/6", className)}
+      className={cx(
+        "orientation-vertical:hidden font-medium text-base/6 sm:text-sm/6",
+        className,
+      )}
       {...props}
     />
-  )
+  );
 }
 
 export function ColorSliderTrack({ className, ...props }: SliderTrackProps) {
@@ -48,5 +55,5 @@ export function ColorSliderTrack({ className, ...props }: SliderTrackProps) {
           : `${defaultStyle.background}, repeating-conic-gradient(#CCC 0% 25%, white 0% 50%) 50% / 16px 16px`,
       })}
     />
-  )
+  );
 }

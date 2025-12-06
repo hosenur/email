@@ -1,12 +1,23 @@
-import type { ColorSwatchPickerItemProps, ColorSwatchPickerProps } from "react-aria-components"
+import type {
+  ColorSwatchPickerItemProps,
+  ColorSwatchPickerProps,
+} from "react-aria-components";
 import {
   ColorSwatchPicker as PrimitiveColorSwatchPicker,
   ColorSwatchPickerItem as PrimitiveColorSwatchPickerItem,
-} from "react-aria-components"
-import { cx } from "@/lib/primitive"
+} from "react-aria-components";
+import { cx } from "@/lib/primitive";
 
-export function ColorSwatchPicker({ className, ...props }: ColorSwatchPickerProps) {
-  return <PrimitiveColorSwatchPicker className={cx("flex flex-wrap gap-6", className)} {...props} />
+export function ColorSwatchPicker({
+  className,
+  ...props
+}: ColorSwatchPickerProps) {
+  return (
+    <PrimitiveColorSwatchPicker
+      className={cx("flex flex-wrap gap-6", className)}
+      {...props}
+    />
+  );
 }
 
 export function ColorSwatchPickerItem({
@@ -44,5 +55,5 @@ export function ColorSwatchPickerItem({
         </>
       )}
     </PrimitiveColorSwatchPickerItem>
-  )
+  );
 }

@@ -1,24 +1,24 @@
-import { CalendarDateRangeIcon } from "@heroicons/react/24/outline"
-import type { DateDuration } from "@internationalized/date"
+import { CalendarDateRangeIcon } from "@heroicons/react/24/outline";
+import type { DateDuration } from "@internationalized/date";
 import {
   Button,
   DateRangePicker as DateRangePickerPrimitive,
   type DateRangePickerProps as DateRangePickerPrimitiveProps,
   type DateValue,
   type PopoverProps,
-} from "react-aria-components"
-import { twJoin } from "tailwind-merge"
-import { DateInput as PrimitiveDateInput } from "@/components/ui/date-field"
-import { InputGroup } from "@/components/ui/input"
-import { cx } from "@/lib/primitive"
-import { DatePickerOverlay } from "./date-picker"
-import { fieldStyles } from "./field"
+} from "react-aria-components";
+import { twJoin } from "tailwind-merge";
+import { DateInput as PrimitiveDateInput } from "@/components/ui/date-field";
+import { InputGroup } from "@/components/ui/input";
+import { cx } from "@/lib/primitive";
+import { DatePickerOverlay } from "./date-picker";
+import { fieldStyles } from "./field";
 
 export interface DateRangePickerProps<T extends DateValue>
   extends DateRangePickerPrimitiveProps<T> {
-  visibleDuration?: DateDuration
-  pageBehavior?: "visible" | "single"
-  popover?: Omit<PopoverProps, "children">
+  visibleDuration?: DateDuration;
+  pageBehavior?: "visible" | "single";
+  popover?: Omit<PopoverProps, "children">;
 }
 
 export function DateRangePicker<T extends DateValue>({
@@ -31,17 +31,24 @@ export function DateRangePicker<T extends DateValue>({
   return (
     <DateRangePickerPrimitive
       data-slot="control"
-      className={cx(fieldStyles({ className: "group/date-range-picker" }), className)}
+      className={cx(
+        fieldStyles({ className: "group/date-range-picker" }),
+        className,
+      )}
       {...props}
     >
       {(values) => (
         <>
           {typeof children === "function" ? children(values) : children}
-          <DatePickerOverlay {...popover} visibleDuration={visibleDuration} range />
+          <DatePickerOverlay
+            {...popover}
+            visibleDuration={visibleDuration}
+            range
+          />
         </>
       )}
     </DateRangePickerPrimitive>
-  )
+  );
 }
 
 export function DateRangePickerTrigger({
@@ -79,14 +86,17 @@ export function DateRangePickerTrigger({
         <CalendarDateRangeIcon />
       </Button>
     </InputGroup>
-  )
+  );
 }
 
-function DateInput({ className, ...props }: React.ComponentProps<typeof PrimitiveDateInput>) {
+function DateInput({
+  className,
+  ...props
+}: React.ComponentProps<typeof PrimitiveDateInput>) {
   return (
     <PrimitiveDateInput
       className={cx("rounded-none border-none focus-within:ring-0", className)}
       {...props}
     />
-  )
+  );
 }

@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { ChevronRightIcon } from "@heroicons/react/20/solid"
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import type {
   TreeItemContentProps,
   TreeItemContentRenderProps,
   TreeItemProps,
   TreeProps,
-} from "react-aria-components"
+} from "react-aria-components";
 import {
   Button,
   TreeItemContent,
   TreeItem as TreeItemPrimitive,
   Tree as TreePrimitive,
-} from "react-aria-components"
-import { twJoin, twMerge } from "tailwind-merge"
-import { cx } from "@/lib/primitive"
-import { Checkbox } from "./checkbox"
+} from "react-aria-components";
+import { twJoin, twMerge } from "tailwind-merge";
+import { cx } from "@/lib/primitive";
+import { Checkbox } from "./checkbox";
 
 const Tree = <T extends object>({ className, ...props }: TreeProps<T>) => {
   return (
@@ -29,10 +29,13 @@ const Tree = <T extends object>({ className, ...props }: TreeProps<T>) => {
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
-const TreeItem = <T extends object>({ className, ...props }: TreeItemProps<T>) => {
+const TreeItem = <T extends object>({
+  className,
+  ...props
+}: TreeItemProps<T>) => {
   return (
     <TreeItemPrimitive
       className={cx(
@@ -49,11 +52,11 @@ const TreeItem = <T extends object>({ className, ...props }: TreeItemProps<T>) =
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 interface TreeContentProps extends TreeItemContentProps {
-  className?: string
+  className?: string;
 }
 
 const TreeContent = ({ className, children, ...props }: TreeContentProps) => {
@@ -66,9 +69,13 @@ const TreeContent = ({ className, children, ...props }: TreeContentProps) => {
             className,
           )}
         >
-          {values.selectionMode === "multiple" && values.selectionBehavior === "toggle" && (
-            <Checkbox className="[--indicator-mt:0] sm:[--indicator-mt:0]" slot="selection" />
-          )}
+          {values.selectionMode === "multiple" &&
+            values.selectionBehavior === "toggle" && (
+              <Checkbox
+                className="[--indicator-mt:0] sm:[--indicator-mt:0]"
+                slot="selection"
+              />
+            )}
           <div
             className={twJoin(
               "relative w-[calc(calc(var(--tree-item-level)-1)*calc(var(--spacing)*5))] shrink-0",
@@ -89,13 +96,13 @@ const TreeContent = ({ className, children, ...props }: TreeContentProps) => {
         </div>
       )}
     </TreeItemContent>
-  )
-}
+  );
+};
 
 const TreeIndicator = ({
   values,
 }: {
-  values: Pick<TreeItemContentRenderProps, "isDisabled" | "isExpanded">
+  values: Pick<TreeItemContentRenderProps, "isDisabled" | "isExpanded">;
 }) => {
   return (
     <Button
@@ -114,8 +121,8 @@ const TreeIndicator = ({
         )}
       />
     </Button>
-  )
-}
+  );
+};
 
-export type { TreeProps, TreeItemProps }
-export { Tree, TreeItem, TreeIndicator, TreeContent }
+export type { TreeProps, TreeItemProps };
+export { Tree, TreeItem, TreeIndicator, TreeContent };

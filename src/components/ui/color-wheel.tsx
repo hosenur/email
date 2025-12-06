@@ -2,8 +2,8 @@ import {
   ColorWheelTrack,
   ColorWheel as PrimitiveColorWheel,
   type ColorWheelProps as PrimitiveColorWheelProps,
-} from "react-aria-components"
-import { ColorThumb } from "./color-thumb"
+} from "react-aria-components";
+import { ColorThumb } from "./color-thumb";
 
 export interface ColorWheelProps
   extends Omit<PrimitiveColorWheelProps, "outerRadius" | "innerRadius"> {}
@@ -22,5 +22,5 @@ export function ColorWheel(props: ColorWheelProps) {
       />
       <ColorThumb />
     </PrimitiveColorWheel>
-  )
+  );
 }
