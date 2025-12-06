@@ -8,12 +8,25 @@ interface Account {
   lastLoginAt: string;
 }
 
-const ACCOUNTS_KEY = "hosenur_accounts";
+const ACCOUNTS_COOKIE_NAME = "hosenur_accounts";
+
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+function setCookie(name: string, value: string, days: number) {
+  if (typeof document === "undefined") return;
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  // Set cookie on root domain so it's shared across subdomains
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; domain=.hosenur.email; SameSite=Lax`;
+}
 
 function getStoredAccounts(): Account[] {
-  if (typeof window === "undefined") return [];
   try {
-    const stored = localStorage.getItem(ACCOUNTS_KEY);
+    const stored = getCookie(ACCOUNTS_COOKIE_NAME);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
@@ -21,8 +34,7 @@ function getStoredAccounts(): Account[] {
 }
 
 function saveAccounts(accounts: Account[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+  setCookie(ACCOUNTS_COOKIE_NAME, JSON.stringify(accounts), 30);
 }
 
 export function useAccounts() {
