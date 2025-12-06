@@ -4,7 +4,7 @@ import { useQueryState } from "nuqs";
 import { useState } from "react";
 import useSWR from "swr";
 import SignOutIcon from "@/components/icons/signout";
-import UserIcon from "@/components/icons/usericon";
+import { Avatar } from "@/components/ui/avatar";
 import {
   CommandMenu,
   CommandMenuItem,
@@ -147,7 +147,13 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
                   onAction={() => handleSwitchAccount(account.email)}
                   className="gap-3"
                 >
-                  <UserIcon className="size-4" />
+                  <Avatar
+                    src={account.image}
+                    initials={
+                      account.name?.charAt(0) || account.email.charAt(0)
+                    }
+                    size="xs"
+                  />
                   <CommandMenuLabel>{account.email}</CommandMenuLabel>
                 </CommandMenuItem>
               ))}

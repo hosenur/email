@@ -15,6 +15,8 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.2.4",
+    "@dicebear/core": "^9.2.4",
     "@fontsource/geist-sans": "^5.2.5",
     "@heroicons/react": "^2.2.0",
     "@internationalized/date": "^3.10.0",

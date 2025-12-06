@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 interface Account {
   email: string;
   name: string;
+  image?: string;
   lastLoginAt: string;
 }
 
@@ -44,16 +45,19 @@ export function useAccounts() {
     setAccounts(getStoredAccounts());
   }, []);
 
-  const addAccount = useCallback((email: string, name: string) => {
-    const existing = getStoredAccounts();
-    const filtered = existing.filter((a) => a.email !== email);
-    const updated = [
-      { email, name, lastLoginAt: new Date().toISOString() },
-      ...filtered,
-    ];
-    saveAccounts(updated);
-    setAccounts(updated);
-  }, []);
+  const addAccount = useCallback(
+    (email: string, name: string, image?: string) => {
+      const existing = getStoredAccounts();
+      const filtered = existing.filter((a) => a.email !== email);
+      const updated = [
+        { email, name, image, lastLoginAt: new Date().toISOString() },
+        ...filtered,
+      ];
+      saveAccounts(updated);
+      setAccounts(updated);
+    },
+    [],
+  );
 
   const removeAccount = useCallback((email: string) => {
     const existing = getStoredAccounts();

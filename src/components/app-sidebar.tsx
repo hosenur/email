@@ -91,6 +91,7 @@ export default function AppSidebar(
               <Avatar
                 className="size-8 *:size-8 group-data-[state=collapsed]:size-6 group-data-[state=collapsed]:*:size-6"
                 isSquare
+                src={session?.user?.image}
                 initials={session?.user?.name?.charAt(0) || "U"}
               />
               <div className="in-data-[collapsible=dock]:hidden text-sm">
