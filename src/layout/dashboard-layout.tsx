@@ -1,8 +1,8 @@
 "use client";
 
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import EmailSidebar from "@/components/email-sidebar";
 import AppSidebar from "@/components/app-sidebar";
+import EmailSidebar from "@/components/email-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -11,9 +11,9 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
-      <EmailSidebar />
+      <EmailSidebar intent="float" />
       <SidebarInset>{children}</SidebarInset>
-      <AppSidebar />
+      <AppSidebar side="right" intent="float" />
     </SidebarProvider>
   );
 }

@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
-import { Loader } from "@/components/ui/loader";
 import { signIn } from "@/lib/auth-client";
 
 function getSubdomain(): string {
@@ -33,23 +32,14 @@ function getSubdomain(): string {
   return "";
 }
 
-export default function SubdomainAuthPage() {
+export default function LoginPage() {
   const router = useRouter();
-  const [subdomain, setSubdomain] = useState<string | null>(null);
+  const subdomain = getSubdomain();
+  const email = subdomain ? `${subdomain}@hosenur.email` : "";
+
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const detectedSubdomain = getSubdomain();
-    if (!detectedSubdomain) {
-      window.location.href = "/auth/login";
-      return;
-    }
-    setSubdomain(detectedSubdomain);
-  }, []);
-
-  const email = subdomain ? `${subdomain}@hosenur.email` : "";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -74,24 +64,15 @@ export default function SubdomainAuthPage() {
     }
   }
 
-  // Show loading state until subdomain is detected
-  if (subdomain === null) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-bg">
-        <Loader />
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg">
       <div className="w-full max-w-sm space-y-6 rounded-xl bg-overlay p-8 shadow-lg">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-fg">
-            Sign in to {subdomain}
+            Sign in
           </h1>
           <p className="text-sm text-muted-fg">
-            Enter your password to access your inbox
+            Enter your password to continue
           </p>
         </div>
 
@@ -116,7 +97,7 @@ export default function SubdomainAuthPage() {
           <Button
             type="submit"
             className="w-full"
-            isDisabled={loading || !password}
+            isDisabled={loading || !email}
           >
             {loading ? "Signing in..." : "Sign in"}
           </Button>

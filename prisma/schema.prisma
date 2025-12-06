@@ -10,6 +10,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum EmailCategory {
+  Work
+  Personal
+  Finance
+  Social
+  Promotions
+  Updates
+  Spam
+  Other
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -66,4 +77,27 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@map("verification")
+}
+
+model Email {
+  id          String        @id @default(cuid())
+  messageId   String        @unique
+  from        String
+  to          String[]
+  cc          String[]
+  bcc         String[]
+  replyTo     String[]
+  recipient   String
+  subject     String
+  textBody    String?
+  htmlBody    String?
+  receivedAt  DateTime
+  category    EmailCategory @default(Other)
+  confidence  Float         @default(0)
+  summary     String?
+  actionItems String[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("email")
 }

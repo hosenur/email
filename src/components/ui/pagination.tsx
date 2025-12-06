@@ -1,12 +1,10 @@
-import { twMerge } from "tailwind-merge";
-import { type ButtonProps, buttonStyles } from "@/components/ui/button";
-import { Link, type LinkProps } from "@/components/ui/link";
+"use client"
 
-const Pagination = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<"nav">) => (
+import { twMerge } from "tailwind-merge"
+import { type ButtonProps, buttonStyles } from "@/components/ui/button"
+import { Link, type LinkProps } from "@/components/ui/link"
+
+const Pagination = ({ className, ref, ...props }: React.ComponentProps<"nav">) => (
   <nav
     data-slot="pagination"
     aria-label="pagination"
@@ -18,27 +16,15 @@ const Pagination = ({
     ref={ref}
     {...props}
   />
-);
+)
 
-const PaginationSection = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<"ul">) => (
+const PaginationSection = ({ className, ref, ...props }: React.ComponentProps<"ul">) => (
   <li data-slot="pagination-section">
-    <ul
-      ref={ref}
-      className={twMerge("flex h-full gap-1.5 text-sm/6", className)}
-      {...props}
-    />
+    <ul ref={ref} className={twMerge("flex h-full gap-1.5 text-sm/6", className)} {...props} />
   </li>
-);
+)
 
-const PaginationList = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<"ul">) => {
+const PaginationList = ({ className, ref, ...props }: React.ComponentProps<"ul">) => {
   return (
     <ul
       ref={ref}
@@ -47,15 +33,15 @@ const PaginationList = ({
       className={twMerge("flex gap-[5px]", className)}
       {...props}
     />
-  );
-};
+  )
+}
 
 interface PaginationItemProps
   extends Omit<LinkProps, "children">,
     Pick<ButtonProps, "isCircle" | "size" | "intent"> {
-  className?: string;
-  isCurrent?: boolean;
-  children?: string | number;
+  className?: string
+  isCurrent?: boolean
+  children?: string | number
 }
 
 const PaginationItem = ({
@@ -80,13 +66,13 @@ const PaginationItem = ({
         {...props}
       />
     </li>
-  );
-};
+  )
+}
 
 interface PaginationAttributesProps
   extends Omit<LinkProps, "className">,
     Pick<ButtonProps, "size" | "isCircle" | "intent"> {
-  className?: string;
+  className?: string
 }
 
 const PaginationFirst = ({
@@ -132,8 +118,8 @@ const PaginationFirst = ({
         </>
       </Link>
     </li>
-  );
-};
+  )
+}
 const PaginationPrevious = ({
   className,
   children,
@@ -173,8 +159,8 @@ const PaginationPrevious = ({
         </>
       </Link>
     </li>
-  );
-};
+  )
+}
 const PaginationNext = ({
   className,
   children,
@@ -214,8 +200,8 @@ const PaginationNext = ({
         </>
       </Link>
     </li>
-  );
-};
+  )
+}
 const PaginationLast = ({
   className,
   children,
@@ -260,23 +246,12 @@ const PaginationLast = ({
         </>
       </Link>
     </li>
-  );
-};
+  )
+}
 
-const PaginationSpacer = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<"div">) => {
-  return (
-    <div
-      aria-hidden
-      ref={ref}
-      className={twMerge("flex-1", className)}
-      {...props}
-    />
-  );
-};
+const PaginationSpacer = ({ className, ref, ...props }: React.ComponentProps<"div">) => {
+  return <div aria-hidden ref={ref} className={twMerge("flex-1", className)} {...props} />
+}
 
 const PaginationGap = ({
   className,
@@ -295,14 +270,10 @@ const PaginationGap = ({
     >
       {children}
     </li>
-  );
-};
+  )
+}
 
-const PaginationLabel = ({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<"li">) => {
+const PaginationLabel = ({ className, ref, ...props }: React.ComponentProps<"li">) => {
   return (
     <li
       ref={ref}
@@ -313,8 +284,8 @@ const PaginationLabel = ({
       )}
       {...props}
     />
-  );
-};
+  )
+}
 
 const PaginationInfo = ({ className, ...props }: React.ComponentProps<"p">) => {
   return (
@@ -325,8 +296,8 @@ const PaginationInfo = ({ className, ...props }: React.ComponentProps<"p">) => {
       )}
       {...props}
     />
-  );
-};
+  )
+}
 
 export {
   Pagination,
@@ -341,4 +312,4 @@ export {
   PaginationSpacer,
   PaginationList,
   PaginationSection,
-};
+}
