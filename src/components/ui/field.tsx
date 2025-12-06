@@ -32,22 +32,19 @@ export const fieldStyles = tv({
     "[&>[data-slot=control]+[slot=description]]:mt-2",
     "[&>[data-slot=control]+[slot=errorMessage]]:mt-2",
     "*:data-[slot=label]:font-medium",
+    "in-disabled:opacity-50 disabled:opacity-50",
   ],
 })
 
-const Label = ({ className, ...props }: LabelProps) => {
+export function Label({ className, ...props }: LabelProps) {
   return <LabelPrimitive data-slot="label" {...props} className={labelStyles({ className })} />
 }
 
-const Description = ({ className, ...props }: TextProps) => {
+export function Description({ className, ...props }: TextProps) {
   return <Text {...props} slot="description" className={descriptionStyles({ className })} />
 }
 
-const FieldError = ({ className, ...props }: FieldErrorProps) => {
-  return <FieldErrorPrimitive {...props} className={cx(fieldErrorStyles(), className)} />
-}
-
-const Fieldset = ({ className, ...props }: React.ComponentProps<"fieldset">) => {
+export function Fieldset({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
       className={twMerge("*:data-[slot=text]:mt-1 [&>*+[data-slot=control]]:mt-6", className)}
@@ -56,7 +53,15 @@ const Fieldset = ({ className, ...props }: React.ComponentProps<"fieldset">) => 
   )
 }
 
-const Legend = ({ className, ...props }: React.ComponentProps<"legend">) => {
+export function FieldGroup({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+  return <div data-slot="control" className={twMerge("space-y-6", className)} {...props} />
+}
+
+export function FieldError({ className, ...props }: FieldErrorProps) {
+  return <FieldErrorPrimitive {...props} className={cx(fieldErrorStyles(), className)} />
+}
+
+export function Legend({ className, ...props }: React.ComponentProps<"legend">) {
   return (
     <legend
       data-slot="legend"
@@ -65,5 +70,3 @@ const Legend = ({ className, ...props }: React.ComponentProps<"legend">) => {
     />
   )
 }
-
-export { Description, FieldError, Fieldset, Legend, Label }
