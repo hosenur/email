@@ -172,6 +172,7 @@ export default async function handler(
         htmlBody: fetchedEmail.html || null,
         receivedAt: new Date(fetchedEmail.created_at),
         replyTo: fetchedEmail.reply_to,
+        opened: false,
         category: category,
         confidence: analysis?.confidence || 0,
         summary: analysis?.summary || null,

@@ -34,6 +34,7 @@ export default async function handler(
         receivedAt: true,
         category: true,
         summary: true,
+        opened: true,
       },
     });
 

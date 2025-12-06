@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroicons/react/20/solid";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
+import SparkleIcon from "@/components/icons/sparkle";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { DashboardLayout } from "@/layout/dashboard-layout";
@@ -28,7 +29,13 @@ interface EmailResponse {
   email: Email;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url, { credentials: "include" });
+  if (!res.ok) {
+    throw new Error("Failed to fetch");
+  }
+  return res.json();
+};
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -91,13 +98,6 @@ function EmailViewer({ emailId }: { emailId: string }) {
     <div className="flex h-full flex-col">
       {/* Email Header */}
       <div className="border-b border-border p-6">
-        <div className="mb-4 flex items-center gap-2">
-          <Button size="sq-sm" onPress={() => setSelectedId(null)}>
-            <ArrowLeftIcon className="size-4" />
-          </Button>
-          <span className="text-sm text-muted-fg">Back to inbox</span>
-        </div>
-
         <h1 className="mb-4 text-2xl font-semibold text-fg">
           {email.subject || "No subject"}
         </h1>
@@ -138,8 +138,11 @@ function EmailViewer({ emailId }: { emailId: string }) {
       {/* Email Body */}
       <div className="flex-1 overflow-auto p-6">
         {email.summary && (
-          <div className="mb-6 rounded-lg bg-secondary/50 p-4">
-            <h3 className="mb-2 text-sm font-medium text-fg">AI Summary</h3>
+          <div className="mb-6 rounded-lg">
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-fg">
+              <SparkleIcon className="w-4 h-4" />
+              AI Summary
+            </h3>
             <p className="text-sm text-muted-fg">{email.summary}</p>
           </div>
         )}
@@ -172,10 +175,21 @@ function EmailViewer({ emailId }: { emailId: string }) {
   );
 }
 
+interface TldrResponse {
+  tldr: string | null;
+  count: number;
+  message?: string;
+}
+
 function InboxEmpty() {
   const { data: session } = useSession();
   const router = useRouter();
   const { subdomain } = router.query;
+  const {
+    data: tldrData,
+    error: tldrError,
+    isLoading: tldrLoading,
+  } = useSWR<TldrResponse>("/api/tldr", fetcher);
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-bg">
@@ -191,9 +205,33 @@ function InboxEmpty() {
         </div>
 
         <div className="rounded-lg border border-border bg-secondary/50 p-6">
-          <p className="text-muted-fg">
-            Select an email from the sidebar to view it here
-          </p>
+          {tldrLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader />
+            </div>
+          ) : tldrError ? (
+            <p className="text-muted-fg">
+              Select an email from the sidebar to view it here
+            </p>
+          ) : tldrData?.tldr ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <SparkleIcon className="h-4 w-4 text-muted-fg" />
+                <span className="text-sm font-medium text-fg">
+                  TLDR ({tldrData.count} unread)
+                </span>
+              </div>
+              <p className="text-sm text-muted-fg">{tldrData.tldr}</p>
+            </div>
+          ) : tldrData?.count === 0 ? (
+            <p className="text-muted-fg">
+              No unread emails. You're all caught up!
+            </p>
+          ) : (
+            <p className="text-muted-fg">
+              Select an email from the sidebar to view it here
+            </p>
+          )}
         </div>
       </div>
     </div>

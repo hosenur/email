@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
-import { Loader } from "@/components/ui/loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
   SidebarContent,
@@ -18,13 +18,15 @@ interface Email {
   receivedAt: string;
   category: string | null;
   summary: string | null;
+  opened: boolean;
 }
 
 interface EmailsResponse {
   emails: Email[];
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) =>
+  fetch(url, { credentials: "include" }).then((res) => res.json());
 
 function formatTime(dateString: string): string {
   const date = new Date(dateString);
@@ -74,8 +76,19 @@ export default function EmailSidebar(
         <SidebarSectionGroup>
           <SidebarSection>
             {isLoading && (
-              <div className="flex items-center justify-center py-8">
-                <Loader />
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <SidebarItem key={i} className="pointer-events-none">
+                    <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-12" />
+                      </div>
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-full" />
+                    </div>
+                  </SidebarItem>
+                ))}
               </div>
             )}
             {error && (
@@ -94,14 +107,20 @@ export default function EmailSidebar(
                 tooltip={email.subject || "No subject"}
                 isCurrent={selectedId === email.id}
                 onPress={() => handleEmailClick(email.id)}
+                className="hover:bg-transparent hover:text-sidebar-fg data-hovered:bg-transparent data-hovered:text-sidebar-fg [&_[data-slot='icon']]:hover:text-muted-fg [&_[data-slot='icon']]:data-hovered:text-muted-fg"
               >
                 <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
                   <div className="flex items-center justify-between">
-                    <span
-                      className={`truncate text-sm ${selectedId === email.id ? "font-semibold text-fg" : "font-medium text-fg"}`}
-                    >
-                      {extractSenderName(email.from)}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {!email.opened && (
+                        <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+                      )}
+                      <span
+                        className={`truncate text-sm ${selectedId === email.id ? "font-semibold text-fg" : "font-medium text-fg"}`}
+                      >
+                        {extractSenderName(email.from)}
+                      </span>
+                    </div>
                     <span className="shrink-0 text-xs text-muted-fg">
                       {formatTime(email.receivedAt)}
                     </span>

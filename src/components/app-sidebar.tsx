@@ -10,6 +10,7 @@ import TrashIcon from "@/components/icons/trash";
 import StarIcon from "@/components/icons/star";
 import ArchiveIcon from "@/components/icons/archive";
 import SentIcon from "@/components/icons/sent";
+import SparkleIcon from "@/components/icons/sparkle";
 import { Avatar } from "@/components/ui/avatar";
 import {
   Menu,
@@ -47,23 +48,33 @@ export default function AppSidebar(
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
-            <SidebarItem tooltip="Inbox" isCurrent href="#" badge="3">
+            <SidebarItem
+              tooltip="Inbox"
+              isCurrent
+              href="#"
+              badge="3"
+              className="gap-3"
+            >
               <InboxIcon className="w-4 h-4" />
               <SidebarLabel>Inbox</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Starred" href="#">
+            <SidebarItem tooltip="Starred" href="#" className="gap-3">
               <StarIcon className="w-4 h-4" />
               <SidebarLabel>Starred</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Sent" href="#">
+            <SidebarItem tooltip="Sparkle" href="#" className="gap-3">
+              <SparkleIcon className="w-4 h-4" />
+              <SidebarLabel>Sparkle</SidebarLabel>
+            </SidebarItem>
+            <SidebarItem tooltip="Sent" href="#" className="gap-3">
               <SentIcon className="w-4 h-4" />
               <SidebarLabel>Sent</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Archive" href="#">
+            <SidebarItem tooltip="Archive" href="#" className="gap-3">
               <ArchiveIcon className="w-4 h-4" />
               <SidebarLabel>Archive</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Trash" href="#">
+            <SidebarItem tooltip="Trash" href="#" className="gap-3">
               <TrashIcon className="w-4 h-4" />
               <SidebarLabel>Trash</SidebarLabel>
             </SidebarItem>

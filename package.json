@@ -15,6 +15,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@fontsource/geist-sans": "^5.2.5",
     "@heroicons/react": "^2.2.0",
     "@internationalized/date": "^3.10.0",
     "@mistralai/mistralai": "^1.10.0",

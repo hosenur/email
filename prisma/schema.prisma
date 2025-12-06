@@ -92,6 +92,7 @@ model Email {
   textBody    String?
   htmlBody    String?
   receivedAt  DateTime
+  opened      Boolean       @default(false)
   category    EmailCategory @default(Other)
   confidence  Float         @default(0)
   summary     String?
