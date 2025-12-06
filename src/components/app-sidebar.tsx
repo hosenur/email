@@ -2,14 +2,14 @@
 
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import {
-  ArchiveBoxIcon,
   ArrowRightStartOnRectangleIcon,
   Cog6ToothIcon,
-  InboxIcon,
-  PaperAirplaneIcon,
-  StarIcon,
-  TrashIcon,
 } from "@heroicons/react/24/solid";
+import InboxIcon from "@/components/icons/inbox";
+import TrashIcon from "@/components/icons/trash";
+import StarIcon from "@/components/icons/star";
+import ArchiveIcon from "@/components/icons/archive";
+import SentIcon from "@/components/icons/sent";
 import { Avatar } from "@/components/ui/avatar";
 import {
   Menu,
@@ -48,23 +48,23 @@ export default function AppSidebar(
         <SidebarSectionGroup>
           <SidebarSection>
             <SidebarItem tooltip="Inbox" isCurrent href="#" badge="3">
-              <InboxIcon />
+              <InboxIcon className="w-4 h-4" />
               <SidebarLabel>Inbox</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Starred" href="#">
-              <StarIcon />
+              <StarIcon className="w-4 h-4" />
               <SidebarLabel>Starred</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Sent" href="#">
-              <PaperAirplaneIcon />
+              <SentIcon className="w-4 h-4" />
               <SidebarLabel>Sent</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Archive" href="#">
-              <ArchiveBoxIcon />
+              <ArchiveIcon className="w-4 h-4" />
               <SidebarLabel>Archive</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Trash" href="#">
-              <TrashIcon />
+              <TrashIcon className="w-4 h-4" />
               <SidebarLabel>Trash</SidebarLabel>
             </SidebarItem>
           </SidebarSection>
@@ -90,7 +90,7 @@ export default function AppSidebar(
                 </span>
               </div>
             </div>
-            <ChevronUpDownIcon data-slot="chevron" />
+            <ChevronUpDownIcon data-slot="chevron" className="w-4 h-4" />
           </MenuTrigger>
           <MenuContent
             className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
@@ -106,12 +106,12 @@ export default function AppSidebar(
             </MenuSection>
 
             <MenuItem href="#settings">
-              <Cog6ToothIcon />
+              <Cog6ToothIcon className="w-4 h-4" />
               Settings
             </MenuItem>
             <MenuSeparator />
             <MenuItem onAction={handleSignOut}>
-              <ArrowRightStartOnRectangleIcon />
+              <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
               Sign out
             </MenuItem>
           </MenuContent>
