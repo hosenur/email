@@ -2,7 +2,7 @@
 
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import EmailSidebar from "@/components/email-sidebar";
-import AppSidebar from "../app-sidebar";
+import AppSidebar from "@/components/app-sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

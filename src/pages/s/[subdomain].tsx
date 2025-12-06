@@ -3,7 +3,7 @@
 import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "@/lib/auth-client";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/layout/dashboard-layout";
 
 export default function SubdomainPage() {
   const router = useRouter();
