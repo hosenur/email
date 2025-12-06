@@ -3,7 +3,7 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import SparkleIcon from "@/components/icons/sparkle";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
@@ -70,6 +70,12 @@ function EmailViewer({ emailId }: { emailId: string }) {
   const { data, error, isLoading } = useSWR<EmailResponse>(
     `/api/emails/${emailId}`,
     fetcher,
+    {
+      onSuccess: () => {
+        // Invalidate the email list to refresh the unread status
+        mutate("/api/emails");
+      },
+    },
   );
 
   if (isLoading) {
@@ -193,7 +199,7 @@ function InboxEmpty() {
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-bg">
-      <div className="w-full max-w-md space-y-6 p-8 text-center">
+      <div className="w-full max-w-md space-y-6 p-8">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight text-fg">
             Welcome to your inbox
@@ -215,7 +221,7 @@ function InboxEmpty() {
             </p>
           ) : tldrData?.tldr ? (
             <div className="space-y-3">
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center gap-2">
                 <SparkleIcon className="h-4 w-4 text-muted-fg" />
                 <span className="text-sm font-medium text-fg">
                   TLDR ({tldrData.count} unread)
