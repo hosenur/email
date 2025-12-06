@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
 
@@ -46,27 +47,31 @@ export function proxy(request: NextRequest) {
   const subdomain = extractSubdomain(request);
 
   if (subdomain) {
-    // Redirect to /auth with subdomain for authentication
-    if (pathname === "/") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/auth";
-      url.searchParams.set("subdomain", subdomain);
-      return NextResponse.redirect(url);
-    }
-
-    // Allow /auth page to load normally with subdomain context
+    // Allow /auth page to load normally
     if (pathname === "/auth") {
       return NextResponse.next();
     }
 
-    // Redirect all other paths to /auth
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth";
-    url.searchParams.set("subdomain", subdomain);
-    return NextResponse.redirect(url);
+    // Check if user is authenticated
+    const sessionCookie = getSessionCookie(request);
+
+    // If not authenticated, redirect to /auth
+    if (!sessionCookie) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth";
+      return NextResponse.redirect(url);
+    }
+
+    // For authenticated users on root path, rewrite to subdomain page
+    if (pathname === "/") {
+      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+    }
+
+    // Allow other paths normally for authenticated users
+    return NextResponse.next();
   }
 
-  // On the root domain, allow normal access
+  // On the root domain (no subdomain), allow normal access to marketing landing page
   return NextResponse.next();
 }
 
