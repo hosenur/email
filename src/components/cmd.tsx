@@ -29,6 +29,16 @@ interface SearchResponse {
   emails: SearchEmail[];
 }
 
+interface UserInfo {
+  email: string;
+  name: string;
+  image: string | null;
+}
+
+interface UsersResponse {
+  users: UserInfo[];
+}
+
 const fetcher = async (url: string) => {
   const res = await fetch(url, { credentials: "include" });
   if (!res.ok) {
@@ -73,10 +83,22 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
   const { data: session } = useSession();
   const { getOtherAccounts } = useAccounts();
 
+  const currentEmail = session?.user?.email || "";
+  const otherAccounts = getOtherAccounts(currentEmail);
+
   const { data: searchData, isLoading } = useSWR<SearchResponse>(
     searchQuery ? `/api/search?q=${encodeURIComponent(searchQuery)}` : null,
     fetcher,
   );
+
+  const { data: usersData } = useSWR<UsersResponse>(
+    otherAccounts.length > 0
+      ? `/api/users?emails=${encodeURIComponent(otherAccounts.join(","))}`
+      : null,
+    fetcher,
+  );
+
+  const usersMap = new Map(usersData?.users?.map((u) => [u.email, u]) ?? []);
 
   function handleEmailSelect(emailId: string) {
     setSelectedId(emailId);
@@ -94,8 +116,6 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
   }
 
   const searchResults = searchData?.emails ?? [];
-  const currentEmail = session?.user?.email || "";
-  const otherAccounts = getOtherAccounts(currentEmail);
 
   return (
     <CommandMenu
@@ -140,23 +160,24 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
           <>
             <CommandMenuSeparator />
             <CommandMenuSection label="Switch Account">
-              {otherAccounts.map((account) => (
-                <CommandMenuItem
-                  key={account.email}
-                  textValue={account.email}
-                  onAction={() => handleSwitchAccount(account.email)}
-                  className="gap-3"
-                >
-                  <Avatar
-                    src={account.image}
-                    initials={
-                      account.name?.charAt(0) || account.email.charAt(0)
-                    }
-                    size="xs"
-                  />
-                  <CommandMenuLabel>{account.email}</CommandMenuLabel>
-                </CommandMenuItem>
-              ))}
+              {otherAccounts.map((email) => {
+                const user = usersMap.get(email);
+                return (
+                  <CommandMenuItem
+                    key={email}
+                    textValue={email}
+                    onAction={() => handleSwitchAccount(email)}
+                    className="gap-3"
+                  >
+                    <Avatar
+                      src={user?.image}
+                      initials={user?.name?.charAt(0) || email.charAt(0)}
+                      size="xs"
+                    />
+                    <CommandMenuLabel>{email}</CommandMenuLabel>
+                  </CommandMenuItem>
+                );
+              })}
             </CommandMenuSection>
           </>
         )}

@@ -67,9 +67,7 @@ export default function SubdomainAuthPage() {
       if (result.error) {
         setError(result.error.message || "Sign in failed");
       } else {
-        if (subdomain) {
-          addAccount(email, subdomain, result.data?.user?.image ?? undefined);
-        }
+        addAccount(email);
         router.push("/");
       }
     } catch {

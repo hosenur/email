@@ -2,13 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-interface Account {
-  email: string;
-  name: string;
-  image?: string;
-  lastLoginAt: string;
-}
-
 const ACCOUNTS_COOKIE_NAME = "hosenur_accounts";
 
 function getCookie(name: string): string | null {
@@ -25,7 +18,7 @@ function setCookie(name: string, value: string, days: number) {
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; domain=.hosenur.email; SameSite=Lax`;
 }
 
-function getStoredAccounts(): Account[] {
+function getStoredAccounts(): string[] {
   try {
     const stored = getCookie(ACCOUNTS_COOKIE_NAME);
     return stored ? JSON.parse(stored) : [];
@@ -34,41 +27,35 @@ function getStoredAccounts(): Account[] {
   }
 }
 
-function saveAccounts(accounts: Account[]) {
+function saveAccounts(accounts: string[]) {
   setCookie(ACCOUNTS_COOKIE_NAME, JSON.stringify(accounts), 30);
 }
 
 export function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [accounts, setAccounts] = useState<string[]>([]);
 
   useEffect(() => {
     setAccounts(getStoredAccounts());
   }, []);
 
-  const addAccount = useCallback(
-    (email: string, name: string, image?: string) => {
-      const existing = getStoredAccounts();
-      const filtered = existing.filter((a) => a.email !== email);
-      const updated = [
-        { email, name, image, lastLoginAt: new Date().toISOString() },
-        ...filtered,
-      ];
-      saveAccounts(updated);
-      setAccounts(updated);
-    },
-    [],
-  );
+  const addAccount = useCallback((email: string) => {
+    const existing = getStoredAccounts();
+    const filtered = existing.filter((e) => e !== email);
+    const updated = [email, ...filtered];
+    saveAccounts(updated);
+    setAccounts(updated);
+  }, []);
 
   const removeAccount = useCallback((email: string) => {
     const existing = getStoredAccounts();
-    const updated = existing.filter((a) => a.email !== email);
+    const updated = existing.filter((e) => e !== email);
     saveAccounts(updated);
     setAccounts(updated);
   }, []);
 
   const getOtherAccounts = useCallback(
     (currentEmail: string) => {
-      return accounts.filter((a) => a.email !== currentEmail);
+      return accounts.filter((e) => e !== currentEmail);
     },
     [accounts],
   );
