@@ -1,16 +1,16 @@
 "use client";
 
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
-import {
-  ArrowRightStartOnRectangleIcon,
-  Cog6ToothIcon,
-} from "@heroicons/react/24/solid";
-import InboxIcon from "@/components/icons/inbox";
-import TrashIcon from "@/components/icons/trash";
-import StarIcon from "@/components/icons/star";
+import { useTheme } from "next-themes";
 import ArchiveIcon from "@/components/icons/archive";
+import InboxIcon from "@/components/icons/inbox";
 import SentIcon from "@/components/icons/sent";
+import SettingsIcon from "@/components/icons/settings";
+import SignOutIcon from "@/components/icons/signout";
 import SparkleIcon from "@/components/icons/sparkle";
+import StarIcon from "@/components/icons/star";
+import ThemeIcon from "@/components/icons/theme";
+import TrashIcon from "@/components/icons/trash";
 import { Avatar } from "@/components/ui/avatar";
 import {
   Menu,
@@ -37,10 +37,15 @@ export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
 
   async function handleSignOut() {
     await signOut();
     window.location.href = "/auth";
+  }
+
+  function toggleTheme() {
+    setTheme(theme === "dark" ? "light" : "dark");
   }
 
   return (
@@ -55,27 +60,27 @@ export default function AppSidebar(
               badge="3"
               className="gap-3"
             >
-              <InboxIcon className="w-4 h-4" />
+              <InboxIcon className="h-4 w-4" />
               <SidebarLabel>Inbox</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Starred" href="#" className="gap-3">
-              <StarIcon className="w-4 h-4" />
+              <StarIcon className="h-4 w-4" />
               <SidebarLabel>Starred</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Sparkle" href="#" className="gap-3">
-              <SparkleIcon className="w-4 h-4" />
+              <SparkleIcon className="h-4 w-4" />
               <SidebarLabel>Sparkle</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Sent" href="#" className="gap-3">
-              <SentIcon className="w-4 h-4" />
+              <SentIcon className="h-4 w-4" />
               <SidebarLabel>Sent</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Archive" href="#" className="gap-3">
-              <ArchiveIcon className="w-4 h-4" />
+              <ArchiveIcon className="h-4 w-4" />
               <SidebarLabel>Archive</SidebarLabel>
             </SidebarItem>
             <SidebarItem tooltip="Trash" href="#" className="gap-3">
-              <TrashIcon className="w-4 h-4" />
+              <TrashIcon className="h-4 w-4" />
               <SidebarLabel>Trash</SidebarLabel>
             </SidebarItem>
           </SidebarSection>
@@ -101,7 +106,7 @@ export default function AppSidebar(
                 </span>
               </div>
             </div>
-            <ChevronUpDownIcon data-slot="chevron" className="w-4 h-4" />
+            <ChevronUpDownIcon data-slot="chevron" className="h-4 w-4" />
           </MenuTrigger>
           <MenuContent
             className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
@@ -116,13 +121,17 @@ export default function AppSidebar(
               </MenuHeader>
             </MenuSection>
 
-            <MenuItem href="#settings">
-              <Cog6ToothIcon className="w-4 h-4" />
+            <MenuItem href="#settings" className="gap-3">
+              <SettingsIcon className="h-4 w-4" />
               Settings
             </MenuItem>
+            <MenuItem onAction={toggleTheme} className="gap-3">
+              <ThemeIcon className="h-4 w-4" />
+              Toggle theme
+            </MenuItem>
             <MenuSeparator />
-            <MenuItem onAction={handleSignOut}>
-              <ArrowRightStartOnRectangleIcon className="w-4 h-4" />
+            <MenuItem onAction={handleSignOut} className="gap-3">
+              <SignOutIcon className="h-4 w-4" />
               Sign out
             </MenuItem>
           </MenuContent>

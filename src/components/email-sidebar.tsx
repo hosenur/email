@@ -64,6 +64,9 @@ export default function EmailSidebar(
   const { data, error, isLoading } = useSWR<EmailsResponse>(
     "/api/emails",
     fetcher,
+    {
+      refreshInterval: 10000,
+    },
   );
 
   function handleEmailClick(emailId: string) {
