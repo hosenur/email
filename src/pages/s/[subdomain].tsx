@@ -5,8 +5,11 @@ import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
 import useSWR, { mutate } from "swr";
 import SparkleIcon from "@/components/icons/sparkle";
+import UfoIcon from "@/components/icons/ufo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
+import { TextField } from "@/components/ui/text-field";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 import { useSession } from "@/lib/auth-client";
 
@@ -103,7 +106,7 @@ function EmailViewer({ emailId }: { emailId: string }) {
   return (
     <div className="flex h-full flex-col">
       {/* Email Header */}
-      <div className="border-b border-border p-6">
+      <div className="p-6">
         <h1 className="mb-4 text-2xl font-semibold text-fg">
           {email.subject || "No subject"}
         </h1>
@@ -200,25 +203,11 @@ function InboxEmpty() {
   return (
     <div className="flex h-full flex-col items-center justify-center bg-bg">
       <div className="w-full max-w-md space-y-6 p-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-fg">
-            Welcome to your inbox
-          </h1>
-          <p className="text-sm text-muted-fg">
-            You are signed in as{" "}
-            {session?.user?.email || `${subdomain}@hosenur.email`}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-border bg-secondary/50 p-6">
+        <div className="rounded-lg p-6">
           {tldrLoading ? (
             <div className="flex items-center justify-center py-4">
               <Loader />
             </div>
-          ) : tldrError ? (
-            <p className="text-muted-fg">
-              Select an email from the sidebar to view it here
-            </p>
           ) : tldrData?.tldr ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
@@ -229,14 +218,11 @@ function InboxEmpty() {
               </div>
               <p className="text-sm text-muted-fg">{tldrData.tldr}</p>
             </div>
-          ) : tldrData?.count === 0 ? (
-            <p className="text-muted-fg">
-              No unread emails. You're all caught up!
-            </p>
           ) : (
-            <p className="text-muted-fg">
-              Select an email from the sidebar to view it here
-            </p>
+            <div className="flex items-center gap-2">
+              <UfoIcon className="h-4 w-4 text-muted-fg" />
+              <p className="text-muted-fg">nothing to see here</p>
+            </div>
           )}
         </div>
       </div>
@@ -250,6 +236,11 @@ export default function SubdomainPage() {
   return (
     <DashboardLayout>
       <div className="h-screen bg-bg">
+        <div className="p-4">
+          <TextField aria-label="Search emails">
+            <Input placeholder="Search emails..." />
+          </TextField>
+        </div>
         {selectedId ? <EmailViewer emailId={selectedId} /> : <InboxEmpty />}
       </div>
     </DashboardLayout>

@@ -53,13 +53,7 @@ export default function AppSidebar(
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
-            <SidebarItem
-              tooltip="Inbox"
-              isCurrent
-              href="#"
-              badge="3"
-              className="gap-3"
-            >
+            <SidebarItem tooltip="Inbox" href="#" badge="3" className="gap-3">
               <InboxIcon className="h-4 w-4" />
               <SidebarLabel>Inbox</SidebarLabel>
             </SidebarItem>

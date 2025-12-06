@@ -3,6 +3,7 @@
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmailPreview } from "@/components/email-preview";
 import {
   Sidebar,
   SidebarContent,
@@ -28,35 +29,6 @@ interface EmailsResponse {
 const fetcher = (url: string) =>
   fetch(url, { credentials: "include" }).then((res) => res.json());
 
-function formatTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (days === 0) {
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  }
-  if (days === 1) {
-    return "Yesterday";
-  }
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function extractSenderName(from: string): string {
-  // Handle "Name <email>" format
-  const match = from.match(/^(.+?)\s*<.+>$/);
-  if (match) {
-    return match[1].trim();
-  }
-  // Handle plain email
-  return from.split("@")[0];
-}
-
 export default function EmailSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
@@ -74,7 +46,10 @@ export default function EmailSidebar(
   }
 
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      {...props}
+      style={{ "--sidebar-width": "20rem" } as React.CSSProperties}
+    >
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
@@ -113,29 +88,7 @@ export default function EmailSidebar(
                 className="hover:bg-transparent hover:text-sidebar-fg data-hovered:bg-transparent data-hovered:text-sidebar-fg [&_[data-slot='icon']]:hover:text-muted-fg [&_[data-slot='icon']]:data-hovered:text-muted-fg"
               >
                 <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {!email.opened && (
-                        <span className="size-1.5 shrink-0 rounded-full bg-primary" />
-                      )}
-                      <span
-                        className={`truncate text-sm ${selectedId === email.id ? "font-semibold text-fg" : "font-medium text-fg"}`}
-                      >
-                        {extractSenderName(email.from)}
-                      </span>
-                    </div>
-                    <span className="shrink-0 text-xs text-muted-fg">
-                      {formatTime(email.receivedAt)}
-                    </span>
-                  </div>
-                  <span
-                    className={`truncate text-sm ${selectedId === email.id ? "font-medium text-fg" : "text-muted-fg"}`}
-                  >
-                    {email.subject || "No subject"}
-                  </span>
-                  <span className="truncate text-xs text-muted-fg">
-                    {email.summary || "No preview available"}
-                  </span>
+                  <EmailPreview email={email} selectedId={selectedId} />
                 </div>
               </SidebarItem>
             ))}
