@@ -11,6 +11,7 @@
         "@mistralai/mistralai": "^1.10.0",
         "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.1.0",
+        "@prisma/extension-accelerate": "^3.0.1",
         "@radix-ui/react-scroll-area": "^1.2.10",
         "@react-aria/i18n": "^3.12.13",
         "@react-stately/color": "^3.9.2",
@@ -228,6 +229,8 @@
     "@prisma/engines": ["@prisma/engines@7.1.0", "", { "dependencies": { "@prisma/debug": "7.1.0", "@prisma/engines-version": "7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba", "@prisma/fetch-engine": "7.1.0", "@prisma/get-platform": "7.1.0" } }, "sha512-KQlraOybdHAzVv45KWKJzpR9mJLkib7/TyApQpqrsL7FUHfgjIcy8jrVGt3iNfG6/GDDl+LNlJ84JSQwIfdzxA=="],
 
     "@prisma/engines-version": ["@prisma/engines-version@7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba", "", {}, "sha512-qZUevUh+yPhGT28rDQnV8V2kLnFjirzhVD67elRPIJHRsUV/mkII10HSrJrhK/U2GYgAxXR2VEREtq7AsfS8qw=="],
+
+    "@prisma/extension-accelerate": ["@prisma/extension-accelerate@3.0.1", "", { "peerDependencies": { "@prisma/client": ">=4.16.1" } }, "sha512-xc+kn4AjjTzS9jsdD1JWCebB09y0Aj+C8GjjG7oUm81PF9psvmJOw5rxpl7tOEBz/8hmuNX996XL28ys/OLxVA=="],
 
     "@prisma/fetch-engine": ["@prisma/fetch-engine@7.1.0", "", { "dependencies": { "@prisma/debug": "7.1.0", "@prisma/engines-version": "7.1.0-6.ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba", "@prisma/get-platform": "7.1.0" } }, "sha512-GZYF5Q8kweXWGfn87hTu17kw7x1DgnehgKoE4Zg1BmHYF3y1Uu0QRY/qtSE4veH3g+LW8f9HKqA0tARG66bxxQ=="],
 

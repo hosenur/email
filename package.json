@@ -21,6 +21,7 @@
     "@mistralai/mistralai": "^1.10.0",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
+    "@prisma/extension-accelerate": "^3.0.1",
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@react-aria/i18n": "^3.12.13",
     "@react-stately/color": "^3.9.2",
