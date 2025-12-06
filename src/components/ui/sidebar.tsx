@@ -230,7 +230,7 @@ const Sidebar = ({
         className={twMerge([
           "w-(--sidebar-width) group-data-[collapsible=hidden]:w-0",
           "group-data-[side=right]:rotate-180",
-          "relative h-svh bg-transparent transition-[width] duration-200 ease-linear",
+          "relative h-svh bg-bg transition-[width] duration-200 ease-linear",
           intent === "default" &&
             "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
           intent === "float" &&
@@ -326,7 +326,7 @@ const SidebarContent = ({
       data-slot="sidebar-content"
       className={twMerge(
         "flex min-h-0 flex-1 scroll-mb-96 flex-col overflow-auto *:data-[slot=sidebar-section]:border-l-0",
-        state === "collapsed" ? "items-center" : "mask-b-from-95%",
+        state === "collapsed" ? "items-center" : "",
         className,
       )}
       {...props}
@@ -517,7 +517,7 @@ const SidebarInset = ({
       data-slot="sidebar-inset"
       ref={ref}
       className={twMerge(
-        "relative flex w-full flex-1 flex-col bg-bg lg:min-w-0",
+        "relative flex min-h-svh w-full flex-1 flex-col bg-bg lg:min-w-0",
         "group-has-data-[intent=inset]/sidebar-root:border group-has-data-[intent=inset]/sidebar-root:border-sidebar-border group-has-data-[intent=inset]/sidebar-root:bg-overlay",
         "md:group-has-data-[intent=inset]/sidebar-root:m-2",
         "md:group-has-data-[side=left]:group-has-data-[intent=inset]/sidebar-root:ml-0",

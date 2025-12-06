@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
+import { useAccounts } from "@/hooks/use-accounts";
 import { signIn } from "@/lib/auth-client";
 
 function getSubdomain(): string {
@@ -36,6 +37,7 @@ export default function LoginPage() {
   const router = useRouter();
   const subdomain = getSubdomain();
   const email = subdomain ? `${subdomain}@hosenur.email` : "";
+  const { addAccount } = useAccounts();
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -55,6 +57,7 @@ export default function LoginPage() {
       if (result.error) {
         setError(result.error.message || "Sign in failed");
       } else {
+        addAccount(email, subdomain);
         router.push("/");
       }
     } catch {

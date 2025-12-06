@@ -3,13 +3,13 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
+import { useState } from "react";
 import useSWR, { mutate } from "swr";
+import { Cmd } from "@/components/cmd";
 import SparkleIcon from "@/components/icons/sparkle";
 import UfoIcon from "@/components/icons/ufo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/loader";
-import { TextField } from "@/components/ui/text-field";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 import { useSession } from "@/lib/auth-client";
 
@@ -232,17 +232,14 @@ function InboxEmpty() {
 
 export default function SubdomainPage() {
   const [selectedId] = useQueryState("id");
+  const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   return (
     <DashboardLayout>
-      <div className="h-screen bg-bg">
-        <div className="p-4">
-          <TextField aria-label="Search emails">
-            <Input placeholder="Search emails..." />
-          </TextField>
-        </div>
+      <div className="min-h-full bg-bg">
         {selectedId ? <EmailViewer emailId={selectedId} /> : <InboxEmpty />}
       </div>
+      <Cmd isOpen={isCmdOpen} onOpenChange={setIsCmdOpen} />
     </DashboardLayout>
   );
 }
