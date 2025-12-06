@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
-import { TextField } from "@/components/ui/text-field";
 import { Loader } from "@/components/ui/loader";
+import { TextField } from "@/components/ui/text-field";
+import { useAccounts } from "@/hooks/use-accounts";
 import { signIn } from "@/lib/auth-client";
 
 function getSubdomain(): string {
@@ -35,6 +36,7 @@ function getSubdomain(): string {
 
 export default function SubdomainAuthPage() {
   const router = useRouter();
+  const { addAccount } = useAccounts();
   const [subdomain, setSubdomain] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -65,6 +67,9 @@ export default function SubdomainAuthPage() {
       if (result.error) {
         setError(result.error.message || "Sign in failed");
       } else {
+        if (subdomain) {
+          addAccount(email, subdomain);
+        }
         router.push("/");
       }
     } catch {
