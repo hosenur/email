@@ -167,7 +167,7 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
                     key={email}
                     textValue={email}
                     onAction={() => handleSwitchAccount(email)}
-                    className="gap-3"
+                    className="gap-2"
                   >
                     <Avatar
                       src={user?.image}
