@@ -2,7 +2,7 @@
 
 A modern email hosting platform that allows you to set up custom domains and create professional email addresses like `mailbox@hosenur.dev`, accessible through your domain at `mailbox.hosenur.dev`.
 
-![Email Platform](./public/preview.png)
+![Email Platform](./public/banner.png)
 
 ## 🚀 Features
 
