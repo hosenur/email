@@ -27,6 +27,7 @@
     "@radix-ui/react-scroll-area": "^1.2.10",
     "@react-aria/i18n": "^3.12.13",
     "@react-stately/color": "^3.9.2",
+    "@tanstack/react-form": "^1.27.1",
     "better-auth": "^1.4.5",
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",

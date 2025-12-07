@@ -2,6 +2,7 @@
 
 import SettingsSidebar from "@/components/settings-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AuthLayout } from "./auth-layout";
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
@@ -9,9 +10,12 @@ interface SettingsLayoutProps {
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
-    <SidebarProvider>
-      <SettingsSidebar intent="float" />
-      <SidebarInset>{children}</SidebarInset>
-    </SidebarProvider>
+    <AuthLayout>
+
+      <SidebarProvider>
+        <SettingsSidebar intent="float" />
+        <SidebarInset>{children}</SidebarInset>
+      </SidebarProvider>
+    </AuthLayout>
   );
 }

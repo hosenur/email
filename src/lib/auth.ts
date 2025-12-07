@@ -4,6 +4,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -11,6 +13,11 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  trustedOrigins: [
+    `http://${ROOT_DOMAIN}`,
+    `https://${ROOT_DOMAIN}`,
+    `https://*.${ROOT_DOMAIN}`,
+  ],
   databaseHooks: {
     user: {
       create: {

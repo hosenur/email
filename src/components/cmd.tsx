@@ -3,7 +3,7 @@
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import useSWR from "swr";
-import SignOutIcon from "@/components/icons/signout";
+
 import { Avatar } from "@/components/ui/avatar";
 import {
   CommandMenu,
@@ -186,9 +186,7 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
           <CommandMenuItem
             textValue="Sign out"
             onAction={handleSignOut}
-            className="gap-3"
           >
-            <SignOutIcon className="size-4" />
             <CommandMenuLabel>Sign out</CommandMenuLabel>
           </CommandMenuItem>
         </CommandMenuSection>

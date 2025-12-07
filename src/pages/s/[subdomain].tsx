@@ -204,11 +204,7 @@ function InboxEmpty() {
     <div className="flex h-full flex-col items-center justify-center bg-bg">
       <div className="w-full max-w-md space-y-6 p-8">
         <div className="rounded-lg p-6">
-          {tldrLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader />
-            </div>
-          ) : tldrData?.tldr ? (
+          {tldrData?.tldr ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <SparkleIcon className="h-4 w-4 text-muted-fg" />

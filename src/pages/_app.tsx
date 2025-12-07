@@ -5,6 +5,9 @@ import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import { ThemeProvider } from "next-themes";
 
 export default function App({ Component, pageProps }: AppProps) {
+  if (!process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
+    throw new Error("NEXT_PUBLIC_ROOT_DOMAIN is missing in .env");
+  }
   return (
     <ThemeProvider attribute="class">
       <NuqsAdapter>

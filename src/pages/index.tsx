@@ -1,22 +1,8 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-
-export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to the main email interface
-    router.push("/s/inbox");
-  }, [router]);
-
+export default function LandingPage() {
   return (
-    <div className="flex h-screen items-center justify-center bg-bg">
-      <div className="text-center">
-        <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-        <p className="text-muted-fg">Loading...</p>
-      </div>
+    <div className="flex h-screen flex-col items-center justify-center bg-bg gap-4">
+      <h1 className="text-4xl font-bold text-fg">Welcome to Hosenur Email</h1>
+      <p className="text-xl text-muted-fg">The best email experience.</p>
     </div>
   );
 }

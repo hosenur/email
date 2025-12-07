@@ -10,6 +10,8 @@ import { Loader } from "@/components/ui/loader";
 import { TextField } from "@/components/ui/text-field";
 import { useAccounts } from "@/hooks/use-accounts";
 import { signIn } from "@/lib/auth-client";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
 
 function getSubdomain(): string {
   if (typeof window === "undefined") return "";
@@ -34,13 +36,47 @@ function getSubdomain(): string {
   return "";
 }
 
+const authSchema = z.object({
+  password: z.string().min(1, "Password is required"),
+});
+
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+
 export default function SubdomainAuthPage() {
   const router = useRouter();
   const { addAccount } = useAccounts();
   const [subdomain, setSubdomain] = useState<string | null>(null);
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const email = subdomain ? `${subdomain}@${ROOT_DOMAIN}` : "";
+
+  const form = useForm({
+    defaultValues: {
+      password: "",
+    },
+    validators: {
+      onDynamic: authSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setError("");
+
+      try {
+        const result = await signIn.email({
+          email,
+          password: value.password,
+        });
+
+        if (result.error) {
+          setError(result.error.message || "Sign in failed");
+        } else {
+          addAccount(email);
+          router.push("/");
+        }
+      } catch {
+        setError("An unexpected error occurred");
+      }
+    },
+  });
 
   useEffect(() => {
     const detectedSubdomain = getSubdomain();
@@ -50,32 +86,6 @@ export default function SubdomainAuthPage() {
     }
     setSubdomain(detectedSubdomain);
   }, []);
-
-  const email = subdomain ? `${subdomain}@hosenur.email` : "";
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const result = await signIn.email({
-        email,
-        password,
-      });
-
-      if (result.error) {
-        setError(result.error.message || "Sign in failed");
-      } else {
-        addAccount(email);
-        router.push("/");
-      }
-    } catch {
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   // Show loading state until subdomain is detected
   if (subdomain === null) {
@@ -98,31 +108,54 @@ export default function SubdomainAuthPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
           <TextField isDisabled>
             <Label>Email</Label>
             <Input type="email" value={email} disabled />
           </TextField>
 
-          <TextField>
-            <Label>Password</Label>
-            <Input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </TextField>
+          <form.Field
+            name="password"
+            children={(field) => (
+              <TextField>
+                <Label>Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                {field.state.meta.errors ? (
+                  <p className="text-sm text-danger">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                ) : null}
+              </TextField>
+            )}
+          />
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
-          <Button
-            type="submit"
-            className="w-full"
-            isDisabled={loading || !password}
-          >
-            {loading ? "Signing in..." : "Sign in"}
-          </Button>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                className="w-full"
+                isDisabled={!canSubmit}
+              >
+                {isSubmitting ? "Signing in..." : "Sign in"}
+              </Button>
+            )}
+          />
         </form>
 
         <p className="text-center text-sm text-muted-fg">

@@ -52,6 +52,11 @@ export function proxy(request: NextRequest) {
       return NextResponse.next();
     }
 
+    // Allow /auth/* routes (like /auth/login, /auth/register) to load normally
+    if (pathname.startsWith("/auth/")) {
+      return NextResponse.next();
+    }
+
     // Check if user is authenticated
     const sessionCookie = getSessionCookie(request);
 

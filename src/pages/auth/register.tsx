@@ -7,63 +7,63 @@ import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
 import { signUp } from "@/lib/auth-client";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
 
+const registerSchema = z
+  .object({
+    username: z.string().min(1, "Username is required"),
+    name: z.string().min(1, "Name is required"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(1, "Confirm Password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
+  const form = useForm({
+    defaultValues: {
+      username: "",
+      name: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validators: {
+      onDynamic: registerSchema,
+    },
+    onSubmit: async ({ value }) => {
+      setError("");
 
-    if (!username) {
-      setError("Username is required");
-      return;
-    }
+      const email = `${value.username}@${ROOT_DOMAIN}`;
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+      try {
+        const result = await signUp.email({
+          email,
+          password: value.password,
+          name: value.name,
+        });
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
-
-    setLoading(true);
-
-    const email = `${username}@hosenur.email`;
-
-    try {
-      const result = await signUp.email({
-        email,
-        password,
-        name,
-      });
-
-      if (result.error) {
-        setError(result.error.message || "Registration failed");
-      } else {
-        // Redirect to the user's subdomain
-        if (ROOT_DOMAIN.includes("localhost")) {
-          window.location.href = `http://${username}.localhost:3000`;
+        if (result.error) {
+          setError(result.error.message || "Registration failed");
         } else {
-          window.location.href = `https://${username}.${ROOT_DOMAIN}`;
+          // Redirect to the user's subdomain
+          if (ROOT_DOMAIN.includes("localhost")) {
+            window.location.href = `http://${value.username}.localhost:3000`;
+          } else {
+            window.location.href = `https://${value.username}.${ROOT_DOMAIN}`;
+          }
         }
+      } catch {
+        setError("An unexpected error occurred");
       }
-    } catch {
-      setError("An unexpected error occurred");
-    } finally {
-      setLoading(false);
-    }
-  }
+    },
+  });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg">
@@ -77,64 +77,120 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <TextField>
-            <Label>Username</Label>
-            <div className="flex">
-              <Input
-                type="text"
-                placeholder="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                className="rounded-r-none"
-              />
-              <span className="inline-flex items-center rounded-r-lg border border-l-0 border-border bg-secondary px-3 text-sm text-muted-fg">
-                @hosenur.email
-              </span>
-            </div>
-          </TextField>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          <form.Field
+            name="username"
+            children={(field) => (
+              <TextField>
+                <Label>Username</Label>
+                <div className="flex">
+                  <Input
+                    type="text"
+                    placeholder="username"
+                    value={field.state.value}
+                    onChange={(e) =>
+                      field.handleChange(e.target.value.toLowerCase())
+                    }
+                    onBlur={field.handleBlur}
+                    className="rounded-r-none"
+                  />
+                  <span className="inline-flex items-center rounded-r-lg border border-l-0 border-border bg-secondary px-3 text-sm text-muted-fg">
+                    @{ROOT_DOMAIN}
+                  </span>
+                </div>
+                {field.state.meta.errors ? (
+                  <p className="text-sm text-danger">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                ) : null}
+              </TextField>
+            )}
+          />
 
-          <TextField>
-            <Label>Name</Label>
-            <Input
-              type="text"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </TextField>
+          <form.Field
+            name="name"
+            children={(field) => (
+              <TextField>
+                <Label>Name</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                {field.state.meta.errors ? (
+                  <p className="text-sm text-danger">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                ) : null}
+              </TextField>
+            )}
+          />
 
-          <TextField>
-            <Label>Password</Label>
-            <Input
-              type="password"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </TextField>
+          <form.Field
+            name="password"
+            children={(field) => (
+              <TextField>
+                <Label>Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Create a password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                {field.state.meta.errors ? (
+                  <p className="text-sm text-danger">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                ) : null}
+              </TextField>
+            )}
+          />
 
-          <TextField>
-            <Label>Confirm Password</Label>
-            <Input
-              type="password"
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </TextField>
+          <form.Field
+            name="confirmPassword"
+            children={(field) => (
+              <TextField>
+                <Label>Confirm Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+                {field.state.meta.errors ? (
+                  <p className="text-sm text-danger">
+                    {field.state.meta.errors.join(", ")}
+                  </p>
+                ) : null}
+              </TextField>
+            )}
+          />
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
-          <Button
-            type="submit"
-            className="w-full"
-            isDisabled={
-              loading || !username || !name || !password || !confirmPassword
-            }
-          >
-            {loading ? "Creating account..." : "Create account"}
-          </Button>
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                className="w-full"
+                isDisabled={!canSubmit}
+              >
+                {isSubmitting ? "Creating account..." : "Create account"}
+              </Button>
+            )}
+          />
         </form>
 
         <p className="text-center text-sm text-muted-fg">
