@@ -1,4 +1,4 @@
-# Custom Domain Email Platform
+# hosenur/email
 
 A modern email hosting platform that allows you to set up custom domains and create professional email addresses like `mailbox@hosenur.dev`, accessible through your domain at `mailbox.hosenur.dev`.
 
