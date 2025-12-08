@@ -112,7 +112,18 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
   }
 
   function handleSwitchAccount(email: string) {
-    window.location.href = getAccountUrl(email);
+    const targetUser = usersMap.get(email);
+    const fromImage = session?.user?.image || "";
+    const toImage = targetUser?.image || "";
+    const redirectUrl = getAccountUrl(email);
+
+    const searchParams = new URLSearchParams({
+      redirect: redirectUrl,
+      fromImage,
+      toImage,
+    });
+
+    window.location.href = `/switch?${searchParams.toString()}`;
   }
 
   const searchResults = searchData?.emails ?? [];

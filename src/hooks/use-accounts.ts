@@ -70,5 +70,5 @@ export function getSubdomainFromEmail(email: string): string {
 
 export function getAccountUrl(email: string): string {
   const subdomain = getSubdomainFromEmail(email);
-  return `https://${subdomain}.hosenur.email`;
+  return `https://${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 }

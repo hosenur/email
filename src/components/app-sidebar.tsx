@@ -97,7 +97,7 @@ export default function AppSidebar(
               <div className="in-data-[collapsible=dock]:hidden text-sm">
                 <SidebarLabel>{session?.user?.name || "User"}</SidebarLabel>
                 <span className="-mt-0.5 block text-muted-fg">
-                  {session?.user?.email || "user@hosenur.email"}
+                  {session?.user?.email}
                 </span>
               </div>
             </div>
@@ -111,7 +111,7 @@ export default function AppSidebar(
               <MenuHeader separator>
                 <span className="block">{session?.user?.name || "User"}</span>
                 <span className="font-normal text-muted-fg">
-                  {session?.user?.email || "user@hosenur.email"}
+                  {session?.user?.email}
                 </span>
               </MenuHeader>
             </MenuSection>
