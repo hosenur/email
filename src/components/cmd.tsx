@@ -197,6 +197,7 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
           <CommandMenuItem
             textValue="Sign out"
             onAction={handleSignOut}
+            className="py-2"
           >
             <CommandMenuLabel>Sign out</CommandMenuLabel>
           </CommandMenuItem>
