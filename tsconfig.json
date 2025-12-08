@@ -24,6 +24,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/pixel-blast.jsx"  ],
   "exclude": ["node_modules"]
 }

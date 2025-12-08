@@ -1,6 +1,6 @@
 "use client";
 
-import SettingsSidebar from "@/components/settings-sidebar";
+import SettingsSidebar from "@/components/sidebar/settings-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthLayout } from "./auth-layout";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import AppSidebar from "@/components/app-sidebar";
-import EmailSidebar from "@/components/email-sidebar";
+import AppSidebar from "@/components/sidebar/app-sidebar";
+import EmailSidebar from "@/components/sidebar/email-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthLayout } from "./auth-layout";
 

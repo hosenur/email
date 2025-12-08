@@ -12,7 +12,6 @@ import {
   CommandMenuList,
   CommandMenuSearch,
   CommandMenuSection,
-  CommandMenuSeparator,
 } from "@/components/ui/command-menu";
 import { getAccountUrl, useAccounts } from "@/hooks/use-accounts";
 import { signOut, useSession } from "@/lib/auth-client";
@@ -167,9 +166,16 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
             </div>
           </CommandMenuSection>
         )}
+                <CommandMenuSection label="Actions">
+          <CommandMenuItem
+            textValue="Sign out"
+            onAction={handleSignOut}
+          >
+            <CommandMenuLabel>Sign out</CommandMenuLabel>
+          </CommandMenuItem>
+        </CommandMenuSection>
         {otherAccounts.length > 0 && (
           <>
-            <CommandMenuSeparator />
             <CommandMenuSection label="Switch Account">
               {otherAccounts.map((email) => {
                 const user = usersMap.get(email);
@@ -192,16 +198,6 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
             </CommandMenuSection>
           </>
         )}
-        <CommandMenuSeparator />
-        <CommandMenuSection label="Actions">
-          <CommandMenuItem
-            textValue="Sign out"
-            onAction={handleSignOut}
-            className="py-2"
-          >
-            <CommandMenuLabel>Sign out</CommandMenuLabel>
-          </CommandMenuItem>
-        </CommandMenuSection>
       </CommandMenuList>
     </CommandMenu>
   );

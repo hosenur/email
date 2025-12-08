@@ -32,10 +32,12 @@ import {
   SidebarSectionGroup,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/router";
 
 export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
+  const router = useRouter();
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
 
@@ -116,7 +118,9 @@ export default function AppSidebar(
               </MenuHeader>
             </MenuSection>
 
-            <MenuItem href="#settings" className="gap-3">
+            <MenuItem href="#settings" className="gap-3" onClick={() => {
+              router.push("/settings");
+             }}>
               <SettingsIcon className="h-4 w-4" />
               Settings
             </MenuItem>
