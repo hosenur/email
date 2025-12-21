@@ -1,7 +1,13 @@
 "use client";
 
-import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronUpDownIcon,
+  PencilSquareIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+import { ComposeEmail } from "@/components/compose-email";
 import ArchiveIcon from "@/components/icons/archive";
 import InboxIcon from "@/components/icons/inbox";
 import SentIcon from "@/components/icons/sent";
@@ -12,6 +18,7 @@ import StarIcon from "@/components/icons/star";
 import ThemeIcon from "@/components/icons/theme";
 import TrashIcon from "@/components/icons/trash";
 import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Menu,
   MenuContent,
@@ -32,7 +39,6 @@ import {
   SidebarSectionGroup,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
-import { useRouter } from "next/router";
 
 export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
@@ -40,10 +46,13 @@ export default function AppSidebar(
   const router = useRouter();
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const [isComposeOpen, setIsComposeOpen] = useState(false);
 
   async function handleSignOut() {
     await signOut();
-    window.location.href = "/auth";
+    const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+    const protocol = ROOT_DOMAIN.includes("localhost") ? "http" : "https";
+    window.location.href = `${protocol}://${ROOT_DOMAIN}`;
   }
 
   function toggleTheme() {
@@ -83,7 +92,15 @@ export default function AppSidebar(
         </SidebarSectionGroup>
       </SidebarContent>
 
-      <SidebarFooter className="flex flex-row justify-between gap-4 group-data-[state=collapsed]:flex-col">
+      <SidebarFooter className="flex flex-col gap-4">
+        <Button
+          intent="secondary"
+          className="w-full"
+          onPress={() => setIsComposeOpen(true)}
+        >
+          <PencilSquareIcon className="mr-2 size-4" />
+          Compose
+        </Button>
         <Menu>
           <MenuTrigger
             className="flex w-full items-center justify-between"
@@ -118,9 +135,13 @@ export default function AppSidebar(
               </MenuHeader>
             </MenuSection>
 
-            <MenuItem href="#settings" className="gap-3" onClick={() => {
-              router.push("/settings");
-             }}>
+            <MenuItem
+              href="#settings"
+              className="gap-3"
+              onClick={() => {
+                router.push("/settings");
+              }}
+            >
               <SettingsIcon className="h-4 w-4" />
               Settings
             </MenuItem>
@@ -137,6 +158,7 @@ export default function AppSidebar(
         </Menu>
       </SidebarFooter>
       <SidebarRail />
+      <ComposeEmail isOpen={isComposeOpen} onOpenChange={setIsComposeOpen} />
     </Sidebar>
   );
 }

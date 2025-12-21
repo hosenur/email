@@ -107,7 +107,9 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
 
   async function handleSignOut() {
     await signOut();
-    window.location.href = "/auth";
+    const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+    const protocol = ROOT_DOMAIN.includes("localhost") ? "http" : "https";
+    window.location.href = `${protocol}://${ROOT_DOMAIN}`;
   }
 
   function handleSwitchAccount(email: string) {
@@ -166,11 +168,8 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
             </div>
           </CommandMenuSection>
         )}
-                <CommandMenuSection label="Actions">
-          <CommandMenuItem
-            textValue="Sign out"
-            onAction={handleSignOut}
-          >
+        <CommandMenuSection label="Actions">
+          <CommandMenuItem textValue="Sign out" onAction={handleSignOut}>
             <CommandMenuLabel>Sign out</CommandMenuLabel>
           </CommandMenuItem>
         </CommandMenuSection>

@@ -2,8 +2,8 @@
 
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
-import { Skeleton } from "@/components/ui/skeleton";
 import { EmailPreview } from "@/components/email-preview";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
   SidebarContent,
@@ -56,7 +56,10 @@ export default function EmailSidebar(
             {isLoading && (
               <div className="space-y-3">
                 {[...Array(5)].map((_, i) => (
-                  <SidebarItem key={i} className="pointer-events-none">
+                  <SidebarItem
+                    key={`skeleton-${i}`}
+                    className="pointer-events-none"
+                  >
                     <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
                       <div className="flex items-center justify-between">
                         <Skeleton className="h-4 w-24" />
