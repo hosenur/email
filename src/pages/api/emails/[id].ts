@@ -38,8 +38,8 @@ export default async function handler(
       return res.status(404).json({ error: "Email not found" });
     }
 
-    // Ensure user can only access their own emails
-    if (email.recipient !== userEmail) {
+    // Ensure user can only access their own emails (received or sent)
+    if (email.recipient !== userEmail && email.fromEmail !== userEmail) {
       return res.status(403).json({ error: "Forbidden" });
     }
 

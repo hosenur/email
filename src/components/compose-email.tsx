@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-} from "@/components/ui/modal";
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { TextField } from "@/components/ui/text-field";
 import { Textarea } from "@/components/ui/textarea";
 import useSWR from "swr";
@@ -107,12 +107,12 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
   }, [isOpen, signature, form]);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent className="sm:max-w-2xl">
-        <ModalHeader>
-          <ModalTitle>Compose Email</ModalTitle>
-        </ModalHeader>
-        <ModalBody>
+    <Drawer isOpen={isOpen} onOpenChange={onOpenChange}>
+      <DrawerContent side="bottom" className="sm:max-w-2xl">
+        <DrawerHeader>
+          <DrawerTitle>Compose Email</DrawerTitle>
+        </DrawerHeader>
+        <DrawerBody>
           <form
             id="compose-form"
             onSubmit={(e) => {
@@ -194,8 +194,8 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
               )}
             </form.Field>
           </form>
-        </ModalBody>
-        <ModalFooter>
+        </DrawerBody>
+        <DrawerFooter>
           <Button intent="outline" onPress={() => onOpenChange(false)}>
             Cancel
           </Button>
@@ -212,8 +212,8 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
               </Button>
             )}
           </form.Subscribe>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

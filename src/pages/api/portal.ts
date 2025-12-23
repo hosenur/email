@@ -128,20 +128,26 @@ export default async function handler(
     }
 
     const fetchedEmail = emailParseResult.data;
-    const recipient = fetchedEmail.to[0] ?? "";
 
-    // Check if recipient exists in the user model
-    const user = await prisma.user.findUnique({
-      where: { email: recipient },
+    const allRecipients = [
+      ...fetchedEmail.to.map(extractEmail),
+      ...fetchedEmail.cc.map(extractEmail),
+      ...fetchedEmail.bcc.map(extractEmail),
+    ];
+    const uniqueRecipients = [...new Set(allRecipients)];
+
+    const registeredUsers = await prisma.user.findMany({
+      where: { email: { in: uniqueRecipients } },
+      select: { email: true },
     });
 
-    if (!user) {
+    if (registeredUsers.length === 0) {
       console.log(
-        `Recipient ${recipient} not found in user database. Skipping email.`,
+        `No registered recipients found for: ${uniqueRecipients.join(", ")}`,
       );
       return res.status(200).json({
-        message: "Email skipped - recipient not registered",
-        recipient,
+        message: "Email skipped - no registered recipients",
+        recipients: uniqueRecipients,
       });
     }
 
@@ -167,31 +173,41 @@ export default async function handler(
       }
     }
 
-    const savedEmail = await prisma.email.create({
-      data: {
-        messageId: fetchedEmail.message_id || payload.data.message_id,
-        from: fetchedEmail.from,
-        fromEmail: extractEmail(fetchedEmail.from),
-        to: fetchedEmail.to,
-        bcc: fetchedEmail.bcc,
-        cc: fetchedEmail.cc,
-        recipient: recipient,
-        subject: fetchedEmail.subject,
-        textBody: fetchedEmail.text || null,
-        htmlBody: fetchedEmail.html || null,
-        receivedAt: new Date(fetchedEmail.created_at),
-        replyTo: fetchedEmail.reply_to,
-        opened: false,
-        category: category,
-        confidence: analysis?.confidence || 0,
-        summary: analysis?.summary || null,
-        actionItems: analysis?.actionItems || [],
-      },
-    });
+    const baseMessageId = fetchedEmail.message_id || payload.data.message_id;
 
-    console.log("Email saved to database:", savedEmail.id);
+    const savedEmails = await Promise.all(
+      registeredUsers.map((user, index) =>
+        prisma.email.create({
+          data: {
+            messageId:
+              index === 0 ? baseMessageId : `${baseMessageId}-${user.email}`,
+            from: fetchedEmail.from,
+            fromEmail: extractEmail(fetchedEmail.from),
+            to: fetchedEmail.to,
+            bcc: fetchedEmail.bcc,
+            cc: fetchedEmail.cc,
+            recipient: user.email,
+            subject: fetchedEmail.subject,
+            textBody: fetchedEmail.text || null,
+            htmlBody: fetchedEmail.html || null,
+            receivedAt: new Date(fetchedEmail.created_at),
+            replyTo: fetchedEmail.reply_to,
+            opened: false,
+            category: category,
+            confidence: analysis?.confidence || 0,
+            summary: analysis?.summary || null,
+            actionItems: analysis?.actionItems || [],
+          },
+        }),
+      ),
+    );
 
-    return res.status(200).json({ analysis, savedEmail });
+    console.log(
+      `Email saved for ${savedEmails.length} recipients:`,
+      savedEmails.map((e) => e.recipient),
+    );
+
+    return res.status(200).json({ analysis, savedEmails });
   } catch (error) {
     console.error("Error processing email:", error);
     return res.status(500).json({ error: "Internal server error" });
