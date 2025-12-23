@@ -64,27 +64,37 @@ export default function AppSidebar(
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
-            <SidebarItem tooltip="Inbox" href="#" badge="3" className="gap-3">
+            <SidebarItem
+              tooltip="Inbox"
+              href="/inbox"
+              isCurrent={router.pathname.includes("/inbox")}
+              className="gap-3"
+            >
               <InboxIcon className="h-4 w-4" />
               <SidebarLabel>Inbox</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Starred" href="#" className="gap-3">
+            <SidebarItem tooltip="Starred" href="/starred" className="gap-3">
               <StarIcon className="h-4 w-4" />
               <SidebarLabel>Starred</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Sparkle" href="#" className="gap-3">
+            <SidebarItem tooltip="Sparkle" href="/sparkle" className="gap-3">
               <SparkleIcon className="h-4 w-4" />
               <SidebarLabel>Sparkle</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Sent" href="#" className="gap-3">
+            <SidebarItem
+              tooltip="Sent"
+              href="/sent"
+              isCurrent={router.pathname.includes("/sent")}
+              className="gap-3"
+            >
               <SentIcon className="h-4 w-4" />
               <SidebarLabel>Sent</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Archive" href="#" className="gap-3">
+            <SidebarItem tooltip="Archive" href="/archive" className="gap-3">
               <ArchiveIcon className="h-4 w-4" />
               <SidebarLabel>Archive</SidebarLabel>
             </SidebarItem>
-            <SidebarItem tooltip="Trash" href="#" className="gap-3">
+            <SidebarItem tooltip="Trash" href="/trash" className="gap-3">
               <TrashIcon className="h-4 w-4" />
               <SidebarLabel>Trash</SidebarLabel>
             </SidebarItem>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -16,6 +17,16 @@ import {
 } from "@/components/ui/modal";
 import { TextField } from "@/components/ui/text-field";
 import { Textarea } from "@/components/ui/textarea";
+import useSWR from "swr";
+
+interface UserResponse {
+  user: {
+    signature: string | null;
+  };
+}
+
+const fetcher = (url: string) =>
+  fetch(url, { credentials: "include" }).then((res) => res.json());
 
 const composeSchema = z.object({
   to: z.string().min(1, "To address is required"),
@@ -30,6 +41,9 @@ interface ComposeEmailProps {
 }
 
 export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
+  const { data } = useSWR<UserResponse>("/api/users", fetcher);
+  const signature = data?.user?.signature;
+
   const form = useForm({
     defaultValues: {
       to: "",
@@ -83,6 +97,14 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
       }
     },
   });
+
+  useEffect(() => {
+    if (isOpen && signature && signature.trim()) {
+      form.setFieldValue("body", `${signature}`);
+    } else if (isOpen) {
+      form.setFieldValue("body", "");
+    }
+  }, [isOpen, signature, form]);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

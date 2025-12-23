@@ -67,9 +67,22 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // For authenticated users on root path, rewrite to subdomain page
+    // For authenticated users on root path, rewrite to subdomain inbox
     if (pathname === "/") {
-      return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
+      return NextResponse.rewrite(
+        new URL(`/s/${subdomain}/inbox`, request.url),
+      );
+    }
+
+    // Rewrite /inbox and /sent to subdomain routes
+    if (pathname === "/inbox") {
+      return NextResponse.rewrite(
+        new URL(`/s/${subdomain}/inbox`, request.url),
+      );
+    }
+
+    if (pathname === "/sent") {
+      return NextResponse.rewrite(new URL(`/s/${subdomain}/sent`, request.url));
     }
 
     // Allow other paths normally for authenticated users

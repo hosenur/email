@@ -27,6 +27,7 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  signature     String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
@@ -83,6 +84,7 @@ model Email {
   id          String        @id @default(cuid())
   messageId   String        @unique
   from        String
+  fromEmail   String
   to          String[]
   cc          String[]
   bcc         String[]

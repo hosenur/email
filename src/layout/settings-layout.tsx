@@ -11,7 +11,6 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
     <AuthLayout>
-
       <SidebarProvider>
         <SettingsSidebar intent="float" />
         <SidebarInset>{children}</SidebarInset>

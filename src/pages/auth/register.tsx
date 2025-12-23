@@ -182,11 +182,7 @@ export default function RegisterPage() {
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
             children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                className="w-full"
-                isDisabled={!canSubmit}
-              >
+              <Button type="submit" className="w-full" isDisabled={!canSubmit}>
                 {isSubmitting ? "Creating account..." : "Create account"}
               </Button>
             )}

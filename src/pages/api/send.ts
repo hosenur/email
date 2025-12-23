@@ -2,6 +2,7 @@ import { fromNodeHeaders } from "better-auth/node";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 
 const SendEmailSchema = z.object({
@@ -60,6 +61,26 @@ export default async function handler(
         .status(500)
         .json({ error: "Failed to send email", details: error });
     }
+
+    await prisma.email.create({
+      data: {
+        messageId: data?.id || "",
+        recipient: to[0],
+        from: `${userName} <${userEmail}>`,
+        fromEmail: userEmail,
+        to,
+        cc,
+        bcc,
+        replyTo: replyTo ? [replyTo] : [userEmail],
+        subject,
+        textBody: body.replace(/<[^>]*>?/gi, ""),
+        htmlBody: body,
+        receivedAt: new Date(),
+        opened: false,
+        category: "Other",
+        confidence: 0,
+      },
+    });
 
     return res.status(200).json({
       success: true,

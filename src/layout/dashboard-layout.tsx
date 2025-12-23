@@ -12,7 +12,6 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <AuthLayout>
-
       <SidebarProvider>
         <EmailSidebar intent="float" />
         <SidebarInset>{children}</SidebarInset>

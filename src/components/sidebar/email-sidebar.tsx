@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
 import { EmailPreview } from "@/components/email-preview";
+import UfoIcon from "@/components/icons/ufo";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sidebar,
@@ -17,84 +19,73 @@ interface Email {
   from: string;
   subject: string | null;
   receivedAt: string;
+  sentAt?: string;
   category: string | null;
   summary: string | null;
   opened: boolean;
+  to?: string[];
 }
 
 interface EmailsResponse {
   emails: Email[];
 }
 
+interface EmailSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  folder?: "inbox" | "sent";
+}
+
 const fetcher = (url: string) =>
   fetch(url, { credentials: "include" }).then((res) => res.json());
 
-export default function EmailSidebar(
-  props: React.ComponentProps<typeof Sidebar>,
-) {
+export default function EmailSidebar(props: EmailSidebarProps) {
   const [selectedId, setSelectedId] = useQueryState("id");
-  const { data, error, isLoading } = useSWR<EmailsResponse>(
-    "/api/emails",
-    fetcher,
-    {
-      refreshInterval: 10000,
-    },
-  );
+  const router = useRouter();
 
-  function handleEmailClick(emailId: string) {
-    setSelectedId(emailId);
-  }
+  const isOnSentPage = router.pathname.includes("/sent");
+  const folder = props.folder || (isOnSentPage ? "sent" : "inbox");
+  const apiUrl = folder === "sent" ? "/api/sent" : "/api/emails";
+
+  const { data, error, isLoading } = useSWR<EmailsResponse>(apiUrl, fetcher, {
+    refreshInterval: 10000,
+  });
 
   return (
-    <Sidebar
-      {...props}
-      style={{ "--sidebar-width": "20rem" } as React.CSSProperties}
-    >
+    <Sidebar {...props}>
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
-            {isLoading && (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <SidebarItem
-                    key={`skeleton-${i}`}
-                    className="pointer-events-none"
-                  >
-                    <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
-                      <div className="flex items-center justify-between">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-12" />
-                      </div>
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-full" />
-                    </div>
-                  </SidebarItem>
+            {isLoading ? (
+              <div className="space-y-2 p-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton
+                    key={`skeleton-${i.toString()}`}
+                    className="h-16 w-full"
+                  />
                 ))}
               </div>
-            )}
-            {error && (
-              <div className="px-3 py-8 text-center text-sm text-muted-fg">
-                Failed to load emails
+            ) : error ? (
+              <div className="flex h-32 items-center justify-center">
+                <p className="text-sm text-muted-fg">Failed to load emails</p>
               </div>
-            )}
-            {data?.emails && data.emails.length === 0 && (
-              <div className="px-3 py-8 text-center text-sm text-muted-fg">
-                No emails yet
+            ) : !data?.emails || data.emails.length === 0 ? (
+              <div className="flex h-32 flex-col items-center justify-center gap-2">
+                <UfoIcon className="h-6 w-6 text-muted-fg" />
+                <p className="text-sm text-muted-fg">
+                  {folder === "sent" ? "No sent emails" : "No emails"}
+                </p>
               </div>
-            )}
-            {data?.emails?.map((email) => (
-              <SidebarItem
-                key={email.id}
-                tooltip={email.subject || "No subject"}
-                isCurrent={selectedId === email.id}
-                onPress={() => handleEmailClick(email.id)}
-                className="hover:bg-transparent hover:text-sidebar-fg data-hovered:bg-transparent data-hovered:text-sidebar-fg [&_[data-slot='icon']]:hover:text-muted-fg [&_[data-slot='icon']]:data-hovered:text-muted-fg"
-              >
-                <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
+            ) : (
+              data.emails.map((email) => (
+                <SidebarItem
+                  key={email.id}
+                  isCurrent={selectedId === email.id}
+                  onPress={() => setSelectedId(email.id)}
+                  className="h-auto py-2"
+                >
                   <EmailPreview email={email} selectedId={selectedId} />
-                </div>
-              </SidebarItem>
-            ))}
+                </SidebarItem>
+              ))
+            )}
           </SidebarSection>
         </SidebarSectionGroup>
       </SidebarContent>

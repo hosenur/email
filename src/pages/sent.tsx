@@ -2,12 +2,12 @@
 
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
-import SentIcon from "@/components/icons/sent";
 import { Loader } from "@/components/ui/loader";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 
 interface SentEmail {
   id: string;
+  from: string;
   to: string[];
   cc: string[];
   bcc: string[];
@@ -53,6 +53,7 @@ function extractRecipientName(email: string): string {
 }
 
 export default function SentPage() {
+  const [selectedId, setSelectedId] = useQueryState("id");
   const { data, error, isLoading } = useSWR<SentEmailsResponse>(
     "/api/sent",
     fetcher,
@@ -61,64 +62,49 @@ export default function SentPage() {
     },
   );
 
-  function handleEmailClick(emailId: string) {
-    // TODO: Navigate to email detail view
-  }
-
   return (
     <DashboardLayout>
-      <div className="h-screen bg-bg">
-        <div className="flex h-full flex-col items-center justify-center bg-bg">
-          <div className="w-full max-w-md space-y-6 p-8">
-            <div className="rounded-lg p-6">
-              <div className="flex items-center justify-center py-8">
-                <SentIcon className="h-8 w-8 text-muted-fg" />
-              </div>
-              <h2 className="mb-4 text-center text-lg font-medium text-fg">
-                Sent Emails
-              </h2>
-              {isLoading ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader />
-                </div>
-              ) : error ? (
-                <div className="text-center text-sm text-muted-fg">
-                  Failed to load sent emails
-                </div>
-              ) : data?.emails && data.emails.length === 0 ? (
-                <p className="text-center text-muted-fg">No sent emails yet</p>
-              ) : (
-                <div className="space-y-3">
-                  {data?.emails?.map((email) => (
-                    <div
-                      key={email.id}
-                      className="cursor-pointer rounded-lg border border-border p-4 hover:bg-secondary/50"
-                      onClick={() => handleEmailClick(email.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {!email.opened && (
-                            <span className="size-1.5 shrink-0 rounded-full bg-primary" />
-                          )}
-                          <span className="font-medium text-fg">
-                            To: {email.to.map(extractRecipientName).join(", ")}
-                          </span>
-                        </div>
-                        <span className="shrink-0 text-xs text-muted-fg">
-                          {formatTime(email.sentAt)}
-                        </span>
-                      </div>
-                      <div className="mt-1 text-sm text-muted-fg">
-                        {email.subject || "No subject"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="flex h-full items-center justify-center">
+          <Loader />
         </div>
-      </div>
+      ) : error ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="text-sm text-muted-fg">Failed to load sent emails</p>
+        </div>
+      ) : data?.emails && data.emails.length === 0 ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="text-muted-fg">No sent emails yet</p>
+        </div>
+      ) : (
+        <div className="p-6">
+          {data?.emails?.map((email) => (
+            <button
+              type="button"
+              key={email.id}
+              className={`w-full cursor-pointer rounded-lg border border-border p-4 text-left hover:bg-secondary/50 ${selectedId === email.id ? "bg-secondary/50" : ""}`}
+              onClick={() => setSelectedId(email.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {!email.opened && (
+                    <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+                  )}
+                  <span className="font-medium text-fg">
+                    To: {email.to.map(extractRecipientName).join(", ")}
+                  </span>
+                </div>
+                <span className="shrink-0 text-xs text-muted-fg">
+                  {formatTime(email.sentAt)}
+                </span>
+              </div>
+              <div className="mt-1 text-sm text-muted-fg">
+                {email.subject || "No subject"}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </DashboardLayout>
   );
 }

@@ -147,11 +147,7 @@ export default function SubdomainAuthPage() {
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
             children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                className="w-full"
-                isDisabled={!canSubmit}
-              >
+              <Button type="submit" className="w-full" isDisabled={!canSubmit}>
                 {isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
             )}

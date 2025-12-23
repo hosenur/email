@@ -1,17 +1,13 @@
 "use client";
 
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { Cmd } from "@/components/cmd";
 import SparkleIcon from "@/components/icons/sparkle";
 import UfoIcon from "@/components/icons/ufo";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { DashboardLayout } from "@/layout/dashboard-layout";
-import { useSession } from "@/lib/auth-client";
 
 interface Email {
   id: string;
@@ -75,7 +71,6 @@ function EmailViewer({ emailId }: { emailId: string }) {
     fetcher,
     {
       onSuccess: () => {
-        // Invalidate the email list to refresh the unread status
         mutate("/api/emails");
       },
     },
@@ -105,7 +100,6 @@ function EmailViewer({ emailId }: { emailId: string }) {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Email Header */}
       <div className="p-6">
         <h1 className="mb-4 text-2xl font-semibold text-fg">
           {email.subject || "No subject"}
@@ -144,12 +138,11 @@ function EmailViewer({ emailId }: { emailId: string }) {
         )}
       </div>
 
-      {/* Email Body */}
       <div className="flex-1 overflow-auto p-6">
         {email.summary && (
           <div className="mb-6 rounded-lg">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-fg">
-              <SparkleIcon className="w-4 h-4" />
+              <SparkleIcon className="h-4 w-4" />
               AI Summary
             </h3>
             <p className="text-sm text-muted-fg">{email.summary}</p>
@@ -170,6 +163,7 @@ function EmailViewer({ emailId }: { emailId: string }) {
         {email.htmlBody ? (
           <div
             className="prose prose-sm max-w-none dark:prose-invert"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML email content rendering is required
             dangerouslySetInnerHTML={{ __html: email.htmlBody }}
           />
         ) : email.textBody ? (
@@ -191,14 +185,7 @@ interface TldrResponse {
 }
 
 function InboxEmpty() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const { subdomain } = router.query;
-  const {
-    data: tldrData,
-    error: tldrError,
-    isLoading: tldrLoading,
-  } = useSWR<TldrResponse>("/api/tldr", fetcher);
+  const { data: tldrData } = useSWR<TldrResponse>("/api/tldr", fetcher);
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-bg">
@@ -226,16 +213,14 @@ function InboxEmpty() {
   );
 }
 
-export default function SubdomainPage() {
+export default function SubdomainInboxPage() {
   const [selectedId] = useQueryState("id");
-  const [isCmdOpen, setIsCmdOpen] = useState(false);
 
   return (
     <DashboardLayout>
       <div className="min-h-full bg-bg">
         {selectedId ? <EmailViewer emailId={selectedId} /> : <InboxEmpty />}
       </div>
-      <Cmd isOpen={isCmdOpen} onOpenChange={setIsCmdOpen} />
     </DashboardLayout>
   );
 }
