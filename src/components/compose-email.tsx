@@ -100,7 +100,7 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
 
   useEffect(() => {
     if (isOpen && signature && signature.trim()) {
-      form.setFieldValue("body", `${signature}`);
+      form.setFieldValue("body", `\n\n--\n${signature}`);
     } else if (isOpen) {
       form.setFieldValue("body", "");
     }

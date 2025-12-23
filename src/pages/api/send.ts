@@ -51,7 +51,7 @@ export default async function handler(
       cc: cc.length > 0 ? cc : undefined,
       bcc: bcc.length > 0 ? bcc : undefined,
       subject,
-      html: body,
+      text: body,
       replyTo: replyTo || userEmail,
     });
 
@@ -73,8 +73,8 @@ export default async function handler(
         bcc,
         replyTo: replyTo ? [replyTo] : [userEmail],
         subject,
-        textBody: body.replace(/<[^>]*>?/gi, ""),
-        htmlBody: body,
+        textBody: body,
+        htmlBody: null,
         receivedAt: new Date(),
         opened: false,
         category: "Other",
