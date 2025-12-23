@@ -5,6 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { mistral } from "@/lib/mistral";
 import { EmailCategory } from "@/generated/prisma/enums";
 
+function extractEmail(from: string): string {
+  const match = from.match(/<(.+?)>$/);
+  if (match) {
+    return match[1];
+  }
+  return from;
+}
+
 const ResendPayloadSchema = z.object({
   created_at: z.string(),
   data: z.object({
@@ -163,6 +171,7 @@ export default async function handler(
       data: {
         messageId: fetchedEmail.message_id || payload.data.message_id,
         from: fetchedEmail.from,
+        fromEmail: extractEmail(fetchedEmail.from),
         to: fetchedEmail.to,
         bcc: fetchedEmail.bcc,
         cc: fetchedEmail.cc,
