@@ -87,9 +87,6 @@ export default function SentPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {!email.opened && (
-                    <span className="size-1.5 shrink-0 rounded-full bg-primary" />
-                  )}
                   <span className="font-medium text-fg">
                     To: {email.to.map(extractRecipientName).join(", ")}
                   </span>

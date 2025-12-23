@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { XMarkIcon } from "@heroicons/react/20/solid";
+import { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
+import { FileTrigger } from "@/components/ui/file-trigger";
 import { Input } from "@/components/ui/input";
 import {
   Drawer,
@@ -40,9 +42,41 @@ interface ComposeEmailProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface Attachment {
+  filename: string;
+  content: string;
+  contentType: string;
+}
+
 export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
   const { data } = useSWR<UserResponse>("/api/users", fetcher);
   const signature = data?.user?.signature;
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files) return;
+
+    const newAttachments: Attachment[] = [];
+    for (const file of Array.from(files)) {
+      const buffer = await file.arrayBuffer();
+      const base64 = btoa(
+        new Uint8Array(buffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          "",
+        ),
+      );
+      newAttachments.push({
+        filename: file.name,
+        content: base64,
+        contentType: file.type || "application/octet-stream",
+      });
+    }
+    setAttachments((prev) => [...prev, ...newAttachments]);
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const form = useForm({
     defaultValues: {
@@ -78,6 +112,7 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
             cc,
             subject: value.subject,
             body: value.body,
+            attachments,
           }),
         });
 
@@ -89,6 +124,7 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
         toast.success("Email sent successfully");
         onOpenChange(false);
         form.reset();
+        setAttachments([]);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Failed to send email",
@@ -193,6 +229,35 @@ export function ComposeEmail({ isOpen, onOpenChange }: ComposeEmailProps) {
                 </TextField>
               )}
             </form.Field>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileTrigger allowsMultiple onSelect={handleFileSelect}>
+                  Attach files
+                </FileTrigger>
+              </div>
+              {attachments.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {attachments.map((attachment, index) => (
+                    <div
+                      key={attachment.filename}
+                      className="flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-sm"
+                    >
+                      <span className="max-w-[150px] truncate">
+                        {attachment.filename}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeAttachment(index)}
+                        className="text-muted-fg hover:text-fg"
+                      >
+                        <XMarkIcon className="size-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </form>
         </DrawerBody>
         <DrawerFooter>

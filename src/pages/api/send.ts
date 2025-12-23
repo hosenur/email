@@ -5,6 +5,12 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 
+const AttachmentSchema = z.object({
+  filename: z.string(),
+  content: z.string(),
+  contentType: z.string(),
+});
+
 const SendEmailSchema = z.object({
   to: z.array(z.email()).min(1, "At least one recipient is required"),
   cc: z.array(z.email()).optional().default([]),
@@ -12,6 +18,7 @@ const SendEmailSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
   body: z.string().min(1, "Body is required"),
   replyTo: z.email().optional(),
+  attachments: z.array(AttachmentSchema).optional().default([]),
 });
 
 export default async function handler(
@@ -43,7 +50,14 @@ export default async function handler(
       });
     }
 
-    const { to, cc, bcc, subject, body, replyTo } = parseResult.data;
+    const { to, cc, bcc, subject, body, replyTo, attachments } =
+      parseResult.data;
+
+    const resendAttachments = attachments.map((att) => ({
+      filename: att.filename,
+      content: Buffer.from(att.content, "base64"),
+      contentType: att.contentType,
+    }));
 
     const { data, error } = await resend.emails.send({
       from: `${userName} <${userEmail}>`,
@@ -53,6 +67,7 @@ export default async function handler(
       subject,
       text: body,
       replyTo: replyTo || userEmail,
+      attachments: resendAttachments.length > 0 ? resendAttachments : undefined,
     });
 
     if (error) {

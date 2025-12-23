@@ -43,15 +43,16 @@ export default async function handler(
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    // Mark email as opened if not already
-    if (!email.opened) {
+    // Mark email as opened only if the current user is the recipient
+    if (!email.opened && email.recipient === userEmail) {
       await prisma.email.update({
         where: { id },
         data: { opened: true },
       });
+      return res.status(200).json({ email: { ...email, opened: true } });
     }
 
-    return res.status(200).json({ email: { ...email, opened: true } });
+    return res.status(200).json({ email });
   } catch (error) {
     console.error("Error fetching email:", error);
     return res.status(500).json({ error: "Internal server error" });
