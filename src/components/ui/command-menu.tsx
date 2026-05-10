@@ -1,6 +1,5 @@
 "use client";
 
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { createContext, use, useEffect } from "react";
 import type {
   AutocompleteProps,
@@ -28,6 +27,7 @@ import {
   useFilter,
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
+import { MagnifyingGlassIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { DropdownKeyboard } from "./dropdown";
 import { Loader } from "./loader";

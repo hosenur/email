@@ -15,6 +15,7 @@ import {
   Text,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { GripVerticalIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Checkbox } from "./checkbox";
 
@@ -85,38 +86,10 @@ const GridListItem = ({ className, children, ...props }: GridListItemProps) => {
         <>
           {values.allowsDragging && (
             <Button slot="drag">
-              <svg
+              <GripVerticalIcon
                 data-slot="drag-icon"
                 className="size-4 text-muted-fg"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M11 5.5C11 6.32843 10.3284 7 9.5 7C8.67157 7 8 6.32843 8 5.5C8 4.67157 8.67157 4 9.5 4C10.3284 4 11 4.67157 11 5.5Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M16 5.5C16 6.32843 15.3284 7 14.5 7C13.6716 7 13 6.32843 13 5.5C13 4.67157 13.6716 4 14.5 4C15.3284 4 16 4.67157 16 5.5Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M11 18.5C11 19.3284 10.3284 20 9.5 20C8.67157 20 8 19.3284 8 18.5C8 17.6716 8.67157 17 9.5 17C10.3284 17 11 17.6716 11 18.5Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M16 18.5C16 19.3284 15.3284 20 14.5 20C13.6716 20 13 19.3284 13 18.5C13 17.6716 13.6716 17 14.5 17C15.3284 17 16 17.6716 16 18.5Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M11 12C11 12.8284 10.3284 13.5 9.5 13.5C8.67157 13.5 8 12.8284 8 12C8 11.1716 8.67157 10.5 9.5 10.5C10.3284 10.5 11 11.1716 11 12Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M16 12C16 12.8284 15.3284 13.5 14.5 13.5C13.6716 13.5 13 12.8284 13 12C13 11.1716 13.6716 10.5 14.5 10.5C15.3284 10.5 16 11.1716 16 12Z"
-                  fill="currentColor"
-                />
-              </svg>
+              />
             </Button>
           )}
 

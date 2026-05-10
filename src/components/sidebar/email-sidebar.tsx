@@ -4,8 +4,7 @@ import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
 import useSWR from "swr";
 import { EmailPreview } from "@/components/email-preview";
-import UfoIcon from "@/components/icons/ufo";
-import { Skeleton } from "@/components/ui/skeleton";
+import { UfoIcon } from "@/components/icons/lucide";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +12,7 @@ import {
   SidebarSection,
   SidebarSectionGroup,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Email {
   id: string;

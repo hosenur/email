@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { getMailboxUrl, getSharedCookieDomain } from "@/lib/mailbox";
 
 const ACCOUNTS_COOKIE_NAME = "hosenur_accounts";
 
@@ -14,8 +15,10 @@ function setCookie(name: string, value: string, days: number) {
   if (typeof document === "undefined") return;
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  // Set cookie on root domain so it's shared across subdomains
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; domain=.hosenur.email; SameSite=Lax`;
+  const sharedDomain = getSharedCookieDomain();
+  const domainAttribute = sharedDomain ? `; domain=${sharedDomain}` : "";
+
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/${domainAttribute}; SameSite=Lax`;
 }
 
 function getStoredAccounts(): string[] {
@@ -63,12 +66,6 @@ export function useAccounts() {
   return { accounts, addAccount, removeAccount, getOtherAccounts };
 }
 
-export function getSubdomainFromEmail(email: string): string {
-  const [local] = email.split("@");
-  return local;
-}
-
 export function getAccountUrl(email: string): string {
-  const subdomain = getSubdomainFromEmail(email);
-  return `https://${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+  return getMailboxUrl(email);
 }

@@ -1,13 +1,13 @@
 import {
-  CameraIcon,
-  FolderIcon,
-  PaperClipIcon,
-} from "@heroicons/react/20/solid";
-import {
   FileTrigger as FileTriggerPrimitive,
   type FileTriggerProps as FileTriggerPrimitiveProps,
 } from "react-aria-components";
 import type { VariantProps } from "tailwind-variants";
+import {
+  CameraIcon,
+  FolderIcon,
+  PaperClipIcon,
+} from "@/components/icons/lucide";
 import { Button, type buttonStyles } from "./button";
 import { Loader } from "./loader";
 

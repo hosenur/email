@@ -1,6 +1,5 @@
 "use client";
 
-import { PlusIcon } from "@heroicons/react/20/solid";
 import React, { useMemo, useRef } from "react";
 import {
   Autocomplete,
@@ -9,6 +8,7 @@ import {
   SelectValue,
   useFilter,
 } from "react-aria-components";
+import { PlusIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Button } from "./button";
 import { fieldStyles } from "./field";

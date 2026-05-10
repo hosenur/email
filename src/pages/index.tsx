@@ -1,16 +1,18 @@
 "use client";
 
-import { motion, AnimatePresence } from "motion/react";
-import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import BellIcon from "@/components/icons/bell";
-import LinkIcon from "@/components/icons/link";
-import PaletteIcon from "@/components/icons/palette";
-import ShieldIcon from "@/components/icons/shield";
-import SparkleIcon from "@/components/icons/sparkle";
+import {
+  BellIcon,
+  LinkIcon,
+  PaletteIcon,
+  ShieldIcon,
+  SparkleIcon,
+} from "@/components/icons/lucide";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 

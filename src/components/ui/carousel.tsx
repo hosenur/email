@@ -1,11 +1,11 @@
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react";
 import { createContext, use, useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Button, type ButtonProps } from "./button";
 

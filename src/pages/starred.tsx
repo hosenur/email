@@ -1,6 +1,6 @@
 "use client";
 
-import StarIcon from "@/components/icons/star";
+import { StarIcon } from "@/components/icons/lucide";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 
 export default function StarredPage() {

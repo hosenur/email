@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import type {
   ComboBoxProps as ComboboxPrimitiveProps,
   InputProps,
@@ -14,6 +13,7 @@ import {
   ListBox,
   useSlottedContext,
 } from "react-aria-components";
+import { ChevronUpDownIcon } from "@/components/icons/lucide";
 import { fieldStyles } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cx } from "@/lib/primitive";

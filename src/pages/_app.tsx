@@ -1,5 +1,5 @@
 import "@/styles/globals.css";
-import "@fontsource/geist-sans";
+import "@fontsource/geist-sans/index.css";
 import type { AppProps } from "next/app";
 import { NuqsAdapter } from "nuqs/adapters/next/pages";
 import { ThemeProvider } from "next-themes";

@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import {
   createContext,
   use,
@@ -28,6 +27,7 @@ import {
   Button as Trigger,
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
+import { ChevronDownIcon, PanelLeftIcon } from "@/components/icons/lucide";
 import { SheetContent } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cx } from "@/lib/primitive";
@@ -684,17 +684,7 @@ const SidebarTrigger = ({
       }}
       {...props}
     >
-      {children || (
-        <svg
-          data-slot="icon"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-        >
-          <path d="M14 2a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z" />
-          <path d="M3 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
-        </svg>
-      )}
+      {children || <PanelLeftIcon data-slot="icon" />}
     </Button>
   );
 };

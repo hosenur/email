@@ -1,4 +1,3 @@
-import { XMarkIcon } from "@heroicons/react/24/solid";
 import type { HeadingProps, TextProps } from "react-aria-components";
 import {
   Heading,
@@ -6,6 +5,7 @@ import {
   Dialog as PrimitiveDialog,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { XMarkIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Button, type ButtonProps } from "./button";
 

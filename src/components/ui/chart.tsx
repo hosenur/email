@@ -17,6 +17,7 @@ import type {
   CartesianGridProps,
   LegendPayload,
   LegendProps,
+  TooltipProps as RechartsTooltipProps,
   XAxisProps as XAxisPropsPrimitive,
   YAxisProps as YAxisPrimitiveProps,
 } from "recharts";
@@ -34,7 +35,6 @@ import type {
   Props as TooltipContentProps,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
-import type { ContentType as TooltipContentType } from "recharts/types/component/Tooltip";
 import { twJoin, twMerge } from "tailwind-merge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cx } from "@/lib/primitive";
@@ -183,7 +183,7 @@ interface BaseChartProps<TValue extends ValueType, TName extends NameType>
   layout?: ChartLayout;
   valueFormatter?: (value: number) => string;
 
-  tooltip?: TooltipContentType<TValue, TName> | boolean;
+  tooltip?: RechartsTooltipProps<TValue, TName>["content"] | boolean;
   tooltipProps?: Omit<ChartTooltipProps<TValue, TName>, "content"> & {
     hideLabel?: boolean;
     labelSeparator?: boolean;
@@ -317,7 +317,7 @@ ${colorConfig
 type ChartTooltipProps<
   TValue extends ValueType,
   TName extends NameType,
-> = React.ComponentProps<typeof TooltipPrimitive<TValue, TName>>;
+> = RechartsTooltipProps<TValue, TName>;
 
 const ChartTooltip = <TValue extends ValueType, TName extends NameType>(
   props: ChartTooltipProps<TValue, TName>,
@@ -336,7 +336,7 @@ const ChartTooltip = <TValue extends ValueType, TName extends NameType>(
         fill: "var(--muted)",
         fillOpacity: 0.5,
       }}
-      {...props}
+      {...(props as RechartsTooltipProps<ValueType, NameType>)}
     />
   );
 };
