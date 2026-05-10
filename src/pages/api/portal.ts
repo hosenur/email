@@ -1,17 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
+import { processInboundEmail } from "@/lib/inbound-email";
 import { resend } from "@/lib/resend";
-import { prisma } from "@/lib/prisma";
-import { mistral } from "@/lib/mistral";
-import { EmailCategory } from "@/generated/prisma/enums";
-
-function extractEmail(from: string): string {
-  const match = from.match(/<(.+?)>$/);
-  if (match) {
-    return match[1];
-  }
-  return from;
-}
 
 const ResendPayloadSchema = z.object({
   created_at: z.string(),
@@ -45,49 +35,6 @@ const FetchedEmailSchema = z.object({
   headers: z.record(z.string(), z.any()),
   attachments: z.array(z.any()).default([]),
 });
-
-async function analyzeEmail(subject: string, content: string) {
-  try {
-    const chatResponse = await mistral.chat.complete({
-      model: "mistral-large-latest",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Analyze the incoming email. Classify it, summarize it, and extract any action items. Return the result as a JSON object with the keys: 'category' (one of Work, Personal, Finance, Social, Promotions, Updates, Spam, Other), 'confidence' (number 0-1), 'summary' (string), and 'actionItems' (array of strings).",
-        },
-        {
-          role: "user",
-          content: `Subject: ${subject}\n\nBody:\n${content}`,
-        },
-      ],
-      responseFormat: { type: "json_object" },
-    });
-
-    if (chatResponse.choices?.[0]?.message?.content) {
-      try {
-        const rawContent = chatResponse.choices[0].message.content;
-        const jsonString =
-          typeof rawContent === "string"
-            ? rawContent
-            : Array.isArray(rawContent)
-              ? rawContent
-                  .map((chunk) => ("text" in chunk ? chunk.text : ""))
-                  .join("")
-              : String(rawContent);
-
-        return JSON.parse(jsonString);
-      } catch (e) {
-        console.error("Failed to parse JSON content:", e);
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Mistral API Error:", error);
-    return null;
-  }
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -128,86 +75,22 @@ export default async function handler(
     }
 
     const fetchedEmail = emailParseResult.data;
-
-    const allRecipients = [
-      ...fetchedEmail.to.map(extractEmail),
-      ...fetchedEmail.cc.map(extractEmail),
-      ...fetchedEmail.bcc.map(extractEmail),
-    ];
-    const uniqueRecipients = [...new Set(allRecipients)];
-
-    const registeredUsers = await prisma.user.findMany({
-      where: { email: { in: uniqueRecipients } },
-      select: { email: true },
+    const result = await processInboundEmail({
+      provider: "resend",
+      providerMessageId: fetchedEmail.id,
+      messageId: fetchedEmail.message_id || payload.data.message_id,
+      from: fetchedEmail.from,
+      to: fetchedEmail.to,
+      cc: fetchedEmail.cc,
+      bcc: fetchedEmail.bcc,
+      replyTo: fetchedEmail.reply_to,
+      subject: fetchedEmail.subject,
+      text: fetchedEmail.text || null,
+      html: fetchedEmail.html || null,
+      receivedAt: fetchedEmail.created_at,
     });
 
-    if (registeredUsers.length === 0) {
-      console.log(
-        `No registered recipients found for: ${uniqueRecipients.join(", ")}`,
-      );
-      return res.status(200).json({
-        message: "Email skipped - no registered recipients",
-        recipients: uniqueRecipients,
-      });
-    }
-
-    console.log("--- Email Body ---");
-    console.log(JSON.stringify(fetchedEmail, null, 2));
-    console.log("HTML:", fetchedEmail.html);
-    console.log("Text:", fetchedEmail.text);
-    console.log("------------------");
-
-    const content = fetchedEmail.text || fetchedEmail.html || "No content";
-
-    const analysis = await analyzeEmail(fetchedEmail.subject, content);
-
-    console.log("--- AI Analysis ---");
-    console.log(JSON.stringify(analysis, null, 2));
-    console.log("-------------------");
-
-    let category: EmailCategory = EmailCategory.Other;
-    if (analysis && analysis.category) {
-      const aiCategory = analysis.category as keyof typeof EmailCategory;
-      if (Object.values(EmailCategory).includes(EmailCategory[aiCategory])) {
-        category = EmailCategory[aiCategory];
-      }
-    }
-
-    const baseMessageId = fetchedEmail.message_id || payload.data.message_id;
-
-    const savedEmails = await Promise.all(
-      registeredUsers.map((user, index) =>
-        prisma.email.create({
-          data: {
-            messageId:
-              index === 0 ? baseMessageId : `${baseMessageId}-${user.email}`,
-            from: fetchedEmail.from,
-            fromEmail: extractEmail(fetchedEmail.from),
-            to: fetchedEmail.to,
-            bcc: fetchedEmail.bcc,
-            cc: fetchedEmail.cc,
-            recipient: user.email,
-            subject: fetchedEmail.subject,
-            textBody: fetchedEmail.text || null,
-            htmlBody: fetchedEmail.html || null,
-            receivedAt: new Date(fetchedEmail.created_at),
-            replyTo: fetchedEmail.reply_to,
-            opened: false,
-            category: category,
-            confidence: analysis?.confidence || 0,
-            summary: analysis?.summary || null,
-            actionItems: analysis?.actionItems || [],
-          },
-        }),
-      ),
-    );
-
-    console.log(
-      `Email saved for ${savedEmails.length} recipients:`,
-      savedEmails.map((e) => e.recipient),
-    );
-
-    return res.status(200).json({ analysis, savedEmails });
+    return res.status(200).json(result);
   } catch (error) {
     console.error("Error processing email:", error);
     return res.status(500).json({ error: "Internal server error" });

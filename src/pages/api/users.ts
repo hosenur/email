@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
+import { isAdminEmail } from "@/lib/admin";
 import { getScopedSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 
@@ -35,7 +36,14 @@ export default async function handler(
           },
         });
 
-        return res.status(200).json({ user });
+        return res.status(200).json({
+          user: user
+            ? {
+                ...user,
+                isAdmin: isAdminEmail(user.email),
+              }
+            : null,
+        });
       }
 
       const emails = emailsParam.split(",").map((e) => e.trim());
