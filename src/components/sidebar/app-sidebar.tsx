@@ -3,6 +3,7 @@
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import useSWR from "swr";
 import { ComposeEmail } from "@/components/compose-email";
 import {
   ArchiveIcon,
@@ -11,6 +12,7 @@ import {
   PencilSquareIcon,
   SentIcon,
   SettingsIcon,
+  ShieldCheckIcon,
   SignOutIcon,
   SparkleIcon,
   StarIcon,
@@ -40,11 +42,31 @@ import {
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
 
+interface CurrentUserResponse {
+  user: {
+    isAdmin?: boolean;
+  } | null;
+}
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url, { credentials: "include" });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch");
+  }
+
+  return res.json() as Promise<CurrentUserResponse>;
+};
+
 export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
   const router = useRouter();
   const { data: session } = useSession();
+  const { data: currentUserData } = useSWR<CurrentUserResponse>(
+    session ? "/api/users" : null,
+    fetcher,
+  );
   const { theme, setTheme } = useTheme();
   const [isComposeOpen, setIsComposeOpen] = useState(false);
 
@@ -155,6 +177,18 @@ export default function AppSidebar(
               <SettingsIcon className="h-4 w-4" />
               Settings
             </MenuItem>
+            {currentUserData?.user?.isAdmin && (
+              <MenuItem
+                href="#admin"
+                className="gap-3"
+                onClick={() => {
+                  router.push("/admin");
+                }}
+              >
+                <ShieldCheckIcon className="h-4 w-4" />
+                Admin
+              </MenuItem>
+            )}
             <MenuItem onAction={toggleTheme} className="gap-3">
               <ThemeIcon className="h-4 w-4" />
               Toggle theme

@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { getScopedSession } from "@/lib/auth-session";
+import { EmailDeliveryError, sendOutboundEmail } from "@/lib/email-delivery";
 import { prisma } from "@/lib/prisma";
-import { resend } from "@/lib/resend";
 
 const AttachmentSchema = z.object({
   filename: z.string(),
@@ -54,33 +54,22 @@ export default async function handler(
     const { to, cc, bcc, subject, body, replyTo, attachments } =
       parseResult.data;
 
-    const resendAttachments = attachments.map((att) => ({
-      filename: att.filename,
-      content: Buffer.from(att.content, "base64"),
-      contentType: att.contentType,
-    }));
-
-    const { data, error } = await resend.emails.send({
+    const sendResult = await sendOutboundEmail({
       from: `${userName} <${userEmail}>`,
       to,
-      cc: cc.length > 0 ? cc : undefined,
-      bcc: bcc.length > 0 ? bcc : undefined,
+      cc,
+      bcc,
       subject,
       text: body,
       replyTo: replyTo || userEmail,
-      attachments: resendAttachments.length > 0 ? resendAttachments : undefined,
+      attachments,
     });
-
-    if (error) {
-      console.error("Resend error:", error);
-      return res
-        .status(500)
-        .json({ error: "Failed to send email", details: error });
-    }
 
     await prisma.email.create({
       data: {
-        messageId: data?.id || "",
+        messageId:
+          sendResult.messageId ||
+          `${sendResult.provider}:${Date.now()}:${crypto.randomUUID()}`,
         recipient: to[0],
         from: `${userName} <${userEmail}>`,
         fromEmail: userEmail,
@@ -100,9 +89,18 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      messageId: data?.id,
+      provider: sendResult.provider,
+      messageId: sendResult.messageId,
     });
   } catch (error) {
+    if (error instanceof EmailDeliveryError) {
+      console.error("Email delivery error:", error.details);
+      return res.status(error.status).json({
+        error: error.message,
+        details: error.details,
+      });
+    }
+
     console.error("Error sending email:", error);
     return res.status(500).json({ error: "Internal server error" });
   }

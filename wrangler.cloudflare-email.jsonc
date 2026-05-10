@@ -1,0 +1,13 @@
+{
+  "name": "hosenur-email-routing",
+  "main": "workers/cloudflare-email.ts",
+  "compatibility_date": "2026-05-10",
+  "send_email": [
+    {
+      "name": "EMAIL"
+    }
+  ],
+  "vars": {
+    "CLOUDFLARE_EMAIL_WEBHOOK_URL": "https://yourdomain.com/api/cloudflare/inbound"
+  }
+}

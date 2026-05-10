@@ -54,6 +54,8 @@ A modern email hosting platform that allows you to set up custom domains and cre
 ### Email Infrastructure
 - **Resend Inbound API** - Receive emails for custom domains
 - **Resend** - Email service for sending emails
+- **Cloudflare Email Routing** - Optional inbound routing through Email Workers
+- **Cloudflare Email Service** - Optional outbound delivery through a Worker binding
 - **Domain-based Routing** - Subdomain-based email access
 - **SWR** - Data fetching and caching
 
@@ -118,12 +120,27 @@ src/
    ```env
    # Database
    DATABASE_URL="postgresql://username:password@localhost:5432/email_db"
+   DIRECT_URL="postgresql://username:password@localhost:5432/email_db"
    
    # Resend
    RESEND_API_KEY="your_resend_api_key"
+
+   # Email delivery provider: resend (default) or cloudflare
+   EMAIL_DELIVERY_PROVIDER="resend"
+
+   # Cloudflare Email Worker inbound webhook
+   CLOUDFLARE_EMAIL_WEBHOOK_SECRET="shared_webhook_secret"
+
+   # Cloudflare outbound delivery via Worker fetch handler
+   CLOUDFLARE_EMAIL_OUTBOUND_URL="https://hosenur-email-routing.your-subdomain.workers.dev"
+   CLOUDFLARE_EMAIL_OUTBOUND_SECRET="shared_outbound_secret"
    
    # Better Auth
    BETTER_AUTH_SECRET="your_better_auth_secret"
+   BETTER_AUTH_URL="http://localhost:3000"
+
+   # Admin dashboard
+   ADMIN_EMAILS="mailbox@yourdomain.com"
    
    # Optional: Mistral AI
    MISTRAL_API_KEY="your_mistral_api_key"
@@ -182,7 +199,22 @@ CNAME support your-domain.com
 2. Enable inbound email for your domain
 3. Set webhook URL to: `https://yourdomain.com/api/portal`
 
-### 4. Create Email Addresses
+### 4. Configure Cloudflare Email Routing (Optional)
+1. Onboard your domain to Cloudflare Email Routing / Email Service
+2. Deploy the Worker:
+   ```bash
+   bunx wrangler deploy --config wrangler.cloudflare-email.jsonc
+   ```
+3. Set Worker secrets:
+   ```bash
+   bunx wrangler secret put CLOUDFLARE_EMAIL_WEBHOOK_SECRET --config wrangler.cloudflare-email.jsonc
+   bunx wrangler secret put CLOUDFLARE_EMAIL_OUTBOUND_SECRET --config wrangler.cloudflare-email.jsonc
+   ```
+4. Update `CLOUDFLARE_EMAIL_WEBHOOK_URL` in `wrangler.cloudflare-email.jsonc` to `https://yourdomain.com/api/cloudflare/inbound`
+5. Bind the Worker to your Cloudflare Email Routing address or catch-all route
+6. To send through Cloudflare instead of Resend, set `EMAIL_DELIVERY_PROVIDER="cloudflare"` in the Next.js app
+
+### 5. Create Email Addresses
 Users can create email addresses through the platform:
 - `mailbox@hosenur.dev` → accessible at `mailbox.hosenur.dev`
 - `info@hosenur.dev` → accessible at `info.hosenur.dev`
@@ -217,7 +249,8 @@ Key email fields:
 
 ### Email Processing
 - `POST /api/portal` - Resend webhook for inbound emails
-- Processes incoming emails via Resend inbound API
+- `POST /api/cloudflare/inbound` - Cloudflare Email Worker webhook for inbound emails
+- Processes incoming emails via Resend inbound API or Cloudflare Email Routing
 - Stores emails in database with AI analysis (if enabled)
 
 ### User Management
@@ -227,8 +260,8 @@ Key email fields:
 ## 🔄 Email Flow
 
 1. **Incoming Email**: Email sent to `mailbox@hosenur.dev`
-2. **Resend Processing**: Resend receives email and forwards to webhook
-3. **Webhook Handler**: `/api/portal` processes the email
+2. **Provider Processing**: Resend receives email and forwards metadata to `/api/portal`, or Cloudflare Email Routing sends it to the Email Worker
+3. **Webhook Handler**: `/api/portal` or `/api/cloudflare/inbound` processes the email
 4. **Database Storage**: Email stored in PostgreSQL with metadata
 5. **User Notification**: User sees new email in real-time interface
 6. **AI Analysis** (Optional): Mistral AI analyzes and categorizes email
