@@ -1,7 +1,6 @@
-import { fromNodeHeaders } from "better-auth/node";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { getScopedSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 
@@ -30,12 +29,14 @@ export default async function handler(
   }
 
   try {
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
+    const {
+      session,
+      status,
+      error: sessionError,
+    } = await getScopedSession(req);
 
     if (!session) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(status).json({ error: sessionError });
     }
 
     const userEmail = session.user.email;

@@ -1,6 +1,6 @@
 "use client";
 
-import SparkleIcon from "@/components/icons/sparkle";
+import { SparkleIcon } from "@/components/icons/lucide";
 import { DashboardLayout } from "@/layout/dashboard-layout";
 
 export default function SparklePage() {

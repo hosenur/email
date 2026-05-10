@@ -1,4 +1,3 @@
-import { CheckIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import type {
   ButtonProps,
   MenuItemProps as MenuItemPrimitiveProps,
@@ -19,6 +18,7 @@ import {
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
 import { tv, type VariantProps } from "tailwind-variants";
+import { CheckIcon, ChevronRightIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import {
   DropdownDescription,

@@ -1,4 +1,3 @@
-import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import type {
   ListBoxProps,
   PopoverProps,
@@ -11,6 +10,7 @@ import {
   SelectValue,
 } from "react-aria-components";
 import { twJoin } from "tailwind-merge";
+import { ChevronUpDownIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import {
   DropdownDescription,

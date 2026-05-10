@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getScopedSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { fromNodeHeaders } from "better-auth/node";
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,13 +17,10 @@ export default async function handler(
   }
 
   try {
-    // Get session using better-auth
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
+    const { session, status, error } = await getScopedSession(req);
 
     if (!session) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(status).json({ error });
     }
 
     const userEmail = session.user.email;

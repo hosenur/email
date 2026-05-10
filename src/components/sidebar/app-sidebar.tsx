@@ -1,22 +1,22 @@
 "use client";
 
-import {
-  ChevronUpDownIcon,
-  PencilSquareIcon,
-} from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { ComposeEmail } from "@/components/compose-email";
-import ArchiveIcon from "@/components/icons/archive";
-import InboxIcon from "@/components/icons/inbox";
-import SentIcon from "@/components/icons/sent";
-import SettingsIcon from "@/components/icons/settings";
-import SignOutIcon from "@/components/icons/signout";
-import SparkleIcon from "@/components/icons/sparkle";
-import StarIcon from "@/components/icons/star";
-import ThemeIcon from "@/components/icons/theme";
-import TrashIcon from "@/components/icons/trash";
+import {
+  ArchiveIcon,
+  ChevronUpDownIcon,
+  InboxIcon,
+  PencilSquareIcon,
+  SentIcon,
+  SettingsIcon,
+  SignOutIcon,
+  SparkleIcon,
+  StarIcon,
+  ThemeIcon,
+  TrashIcon,
+} from "@/components/icons/lucide";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

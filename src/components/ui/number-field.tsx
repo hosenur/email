@@ -1,4 +1,3 @@
-import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import type {
   ButtonProps,
   InputProps,
@@ -8,6 +7,7 @@ import {
   Button,
   NumberField as NumberFieldPrimitive,
 } from "react-aria-components";
+import { MinusIcon, PlusIcon } from "@/components/icons/lucide";
 import { Input, InputGroup } from "@/components/ui/input";
 import { cx } from "@/lib/primitive";
 import { fieldStyles } from "./field";

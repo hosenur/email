@@ -1,14 +1,12 @@
 "use client";
 
-import { XMarkIcon } from "@heroicons/react/20/solid";
-import { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { z } from "zod";
+import { XMarkIcon } from "@/components/icons/lucide";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/field";
-import { FileTrigger } from "@/components/ui/file-trigger";
-import { Input } from "@/components/ui/input";
 import {
   Drawer,
   DrawerBody,
@@ -17,9 +15,11 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Label } from "@/components/ui/field";
+import { FileTrigger } from "@/components/ui/file-trigger";
+import { Input } from "@/components/ui/input";
 import { TextField } from "@/components/ui/text-field";
 import { Textarea } from "@/components/ui/textarea";
-import useSWR from "swr";
 
 interface UserResponse {
   user: {

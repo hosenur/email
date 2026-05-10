@@ -1,9 +1,9 @@
+import { twJoin, twMerge } from "tailwind-merge";
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   InformationCircleIcon,
-} from "@heroicons/react/24/solid";
-import { twJoin, twMerge } from "tailwind-merge";
+} from "@/components/icons/lucide";
 
 export interface NoteProps extends React.HtmlHTMLAttributes<HTMLDivElement> {
   intent?: "default" | "info" | "warning" | "danger" | "success";

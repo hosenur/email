@@ -1,7 +1,7 @@
-import { MinusIcon } from "@heroicons/react/20/solid";
 import { OTPInput, OTPInputContext } from "input-otp";
 import { use } from "react";
 import { twMerge } from "tailwind-merge";
+import { MinusIcon } from "@/components/icons/lucide";
 import { fieldStyles, Label } from "@/components/ui/field";
 
 export function InputOTP({

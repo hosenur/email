@@ -1,6 +1,5 @@
 "use client";
 
-import { XCircleIcon } from "@heroicons/react/16/solid";
 import type {
   TagGroupProps,
   TagListProps,
@@ -13,6 +12,7 @@ import {
   TagList as PrimitiveTagList,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { XCircleIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 
 export function TagGroup({ className, ...props }: TagGroupProps) {

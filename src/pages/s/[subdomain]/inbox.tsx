@@ -1,10 +1,8 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { useQueryState } from "nuqs";
 import useSWR, { mutate } from "swr";
-import SparkleIcon from "@/components/icons/sparkle";
-import UfoIcon from "@/components/icons/ufo";
+import { ArrowLeftIcon, SparkleIcon, UfoIcon } from "@/components/icons/lucide";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { DashboardLayout } from "@/layout/dashboard-layout";

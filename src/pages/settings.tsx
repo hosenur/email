@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import SettingsIcon from "@/components/icons/settings";
-import SettingsLayout from "@/layout/settings-layout";
-import { Textarea } from "@/components/ui/textarea";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { SettingsIcon } from "@/components/icons/lucide";
+import { Textarea } from "@/components/ui/textarea";
+import SettingsLayout from "@/layout/settings-layout";
 
 interface UserResponse {
   user: {

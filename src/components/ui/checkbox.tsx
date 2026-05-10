@@ -1,6 +1,5 @@
 "use client";
 
-import { CheckIcon, MinusIcon } from "@heroicons/react/20/solid";
 import type { CheckboxGroupProps, CheckboxProps } from "react-aria-components";
 import {
   CheckboxGroup as CheckboxGroupPrimitive,
@@ -8,6 +7,7 @@ import {
   composeRenderProps,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { CheckIcon, MinusIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Label } from "./field";
 

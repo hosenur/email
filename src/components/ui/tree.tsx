@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import type {
   TreeItemContentProps,
   TreeItemContentRenderProps,
@@ -14,6 +13,7 @@ import {
   Tree as TreePrimitive,
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
+import { ChevronRightIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Checkbox } from "./checkbox";
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { EyeDropperIcon } from "@heroicons/react/24/solid";
 import { parseColor } from "@react-stately/color";
 import { use } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   ColorPickerStateContext,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { EyeDropperIcon } from "@/components/icons/lucide";
 import { Button } from "./button";
 import { fieldStyles } from "./field";
 

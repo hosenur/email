@@ -19,6 +19,12 @@
   "$schema": "https://ui.shadcn.com/schema.json",
   "iconLibrary": "lucide",
   "registries": {
-    "@intentui": "https://intentui.com/r/{name}"
+    "@intentui": "https://intentui.com/r/{name}",
+    "@irsyad": {
+      "url": "https://design.intentui.com/r/{name}",
+      "headers": {
+        "Authorization": "Bearer ${REGISTRY_TOKEN}"
+      }
+    }
   }
 }

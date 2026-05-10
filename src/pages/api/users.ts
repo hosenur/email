@@ -1,8 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { fromNodeHeaders } from "better-auth/node";
 import { z } from "zod";
+import { getScopedSession } from "@/lib/auth-session";
+import { prisma } from "@/lib/prisma";
 
 const UpdateUserSchema = z.object({
   name: z.string().optional(),
@@ -15,12 +14,10 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      const session = await auth.api.getSession({
-        headers: fromNodeHeaders(req.headers),
-      });
+      const { session, status, error } = await getScopedSession(req);
 
       if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(status).json({ error });
       }
 
       const emailsParam = req.query.emails as string;
@@ -63,12 +60,10 @@ export default async function handler(
 
   if (req.method === "PATCH") {
     try {
-      const session = await auth.api.getSession({
-        headers: fromNodeHeaders(req.headers),
-      });
+      const { session, status, error } = await getScopedSession(req);
 
       if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(status).json({ error });
       }
 
       const parseResult = UpdateUserSchema.safeParse(req.body);

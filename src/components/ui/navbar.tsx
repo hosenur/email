@@ -1,6 +1,5 @@
 "use client";
 
-import { Bars2Icon } from "@heroicons/react/20/solid";
 import { LayoutGroup, motion } from "motion/react";
 import {
   createContext,
@@ -13,6 +12,7 @@ import {
 import type { LinkProps } from "react-aria-components";
 import { Link } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
+import { Bars2Icon } from "@/components/icons/lucide";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cx } from "@/lib/primitive";
 import { Button, type ButtonProps } from "./button";

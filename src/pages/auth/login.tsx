@@ -1,54 +1,39 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
-import { signIn } from "@/lib/auth-client";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
-
-function getSubdomain(): string {
-  if (typeof window === "undefined") return "";
-
-  const hostname = window.location.hostname;
-  const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost";
-
-  // Local development
-  if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
-    if (hostname.includes(".localhost")) {
-      return hostname.split(".")[0];
-    }
-    return "";
-  }
-
-  // Production
-  const rootDomainFormatted = ROOT_DOMAIN.split(":")[0];
-  if (hostname.endsWith(`.${rootDomainFormatted}`)) {
-    return hostname.replace(`.${rootDomainFormatted}`, "");
-  }
-
-  return "";
-}
+import { useAccounts } from "@/hooks/use-accounts";
+import { createMailboxAuthClient } from "@/lib/auth-client";
+import {
+  getCurrentSubdomain,
+  getMailboxEmail,
+  getMailboxOrigin,
+  getMailDomain,
+  getSubdomainFromEmail,
+  isMailboxEmail,
+} from "@/lib/mailbox";
 
 const loginSchema = z.object({
+  email: z.string(),
   password: z.string().min(1, "Password is required"),
 });
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-
 export default function LoginPage() {
-  const router = useRouter();
-  const subdomain = getSubdomain();
-  const email = subdomain ? `${subdomain}@${ROOT_DOMAIN}` : "";
+  const { addAccount } = useAccounts();
+  const subdomain = getCurrentSubdomain();
+  const subdomainEmail = subdomain ? getMailboxEmail(subdomain) : "";
 
   const [error, setError] = useState("");
 
   const form = useForm({
     defaultValues: {
+      email: "",
       password: "",
     },
     validators: {
@@ -57,13 +42,20 @@ export default function LoginPage() {
     onSubmit: async ({ value }) => {
       setError("");
 
-      if (!email) {
-        setError("Email is missing (not on a subdomain)");
+      const email = subdomainEmail || value.email.trim().toLowerCase();
+      const parsedEmail = z.email().safeParse(email);
+
+      if (!parsedEmail.success || !isMailboxEmail(email)) {
+        setError(`Enter a valid @${getMailDomain()} email address`);
         return;
       }
 
       try {
-        const result = await signIn.email({
+        const targetSubdomain = getSubdomainFromEmail(email);
+        const targetOrigin = getMailboxOrigin(targetSubdomain);
+        const mailboxAuthClient = createMailboxAuthClient(targetOrigin);
+
+        const result = await mailboxAuthClient.signIn.email({
           email,
           password: value.password,
         });
@@ -71,7 +63,8 @@ export default function LoginPage() {
         if (result.error) {
           setError(result.error.message || "Sign in failed");
         } else {
-          router.push("/");
+          addAccount(email);
+          window.location.href = targetOrigin;
         }
       } catch {
         setError("An unexpected error occurred");
@@ -99,14 +92,30 @@ export default function LoginPage() {
           }}
           className="space-y-4"
         >
-          <TextField isDisabled>
-            <Label>Email</Label>
-            <Input type="email" value={email} disabled />
-          </TextField>
+          {subdomainEmail ? (
+            <TextField isDisabled>
+              <Label>Email</Label>
+              <Input type="email" value={subdomainEmail} disabled />
+            </TextField>
+          ) : (
+            <form.Field name="email">
+              {(field) => (
+                <TextField>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    placeholder={`mail@${getMailDomain()}`}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                  />
+                </TextField>
+              )}
+            </form.Field>
+          )}
 
-          <form.Field
-            name="password"
-            children={(field) => (
+          <form.Field name="password">
+            {(field) => (
               <TextField>
                 <Label>Password</Label>
                 <Input
@@ -123,22 +132,19 @@ export default function LoginPage() {
                 ) : null}
               </TextField>
             )}
-          />
+          </form.Field>
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                className="w-full"
-                isDisabled={!canSubmit || !email}
-              >
+          >
+            {([canSubmit, isSubmitting]) => (
+              <Button type="submit" className="w-full" isDisabled={!canSubmit}>
                 {isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
             )}
-          />
+          </form.Subscribe>
         </form>
 
         <p className="text-center text-sm text-muted-fg">

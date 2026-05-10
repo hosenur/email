@@ -1,10 +1,26 @@
-import { createAvatar } from "@dicebear/core";
 import { glass } from "@dicebear/collection";
+import { createAvatar } from "@dicebear/core";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { getMailDomain, getRootDomain, getRootDomainHost } from "@/lib/mailbox";
 import { prisma } from "./prisma";
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+const ROOT_DOMAIN = getRootDomain();
+const ROOT_DOMAIN_HOST = getRootDomainHost();
+const MAIL_DOMAIN = getMailDomain();
+
+const trustedOrigins = Array.from(
+  new Set([
+    `http://${ROOT_DOMAIN}`,
+    `https://${ROOT_DOMAIN}`,
+    `http://${ROOT_DOMAIN_HOST}`,
+    `https://${ROOT_DOMAIN_HOST}`,
+    `http://${MAIL_DOMAIN}`,
+    `https://${MAIL_DOMAIN}`,
+    `http://*.${MAIL_DOMAIN}`,
+    `https://*.${MAIL_DOMAIN}`,
+  ]),
+);
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -13,11 +29,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [
-    `http://${ROOT_DOMAIN}`,
-    `https://${ROOT_DOMAIN}`,
-    `https://*.${ROOT_DOMAIN}`,
-  ],
+  trustedOrigins,
   databaseHooks: {
     user: {
       create: {

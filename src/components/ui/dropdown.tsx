@@ -1,4 +1,3 @@
-import { CheckIcon } from "@heroicons/react/16/solid";
 import type {
   ListBoxItemProps,
   ListBoxSectionProps,
@@ -16,6 +15,7 @@ import {
 } from "react-aria-components";
 import { twJoin, twMerge } from "tailwind-merge";
 import { tv } from "tailwind-variants";
+import { CheckIcon } from "@/components/icons/lucide";
 import { Keyboard } from "./keyboard";
 
 const dropdownSectionStyles = tv({

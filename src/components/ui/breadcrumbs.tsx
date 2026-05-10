@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { createContext, use } from "react";
 import type {
   BreadcrumbProps,
@@ -12,6 +11,7 @@ import {
   Breadcrumbs as BreadcrumbsPrimitive,
 } from "react-aria-components";
 import { twMerge } from "tailwind-merge";
+import { ChevronRightIcon } from "@/components/icons/lucide";
 import { cx } from "@/lib/primitive";
 import { Link } from "./link";
 

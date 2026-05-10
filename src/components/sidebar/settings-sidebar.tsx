@@ -1,8 +1,6 @@
 "use client";
 
-import UserIcon from "@/components/icons/user";
-import LockIcon from "@/components/icons/lock";
-import DangerIcon from "@/components/icons/danger";
+import { DangerIcon, LockIcon, UserIcon } from "@/components/icons/lucide";
 import {
   Sidebar,
   SidebarContent,
