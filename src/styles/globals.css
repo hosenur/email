@@ -66,6 +66,7 @@
 
 body {
   @apply font-geist-sans;
+  letter-spacing: -0.2px;
 }
 
 :root {

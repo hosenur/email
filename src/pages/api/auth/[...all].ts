@@ -29,6 +29,16 @@ function isAllowedAuthOrigin(origin: string): boolean {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const authPath = Array.isArray(req.query.all)
+    ? req.query.all.join("/")
+    : req.query.all;
+
+  if (req.method === "POST" && authPath === "sign-up/email") {
+    return res.status(403).json({
+      error: "Account creation is restricted to administrators",
+    });
+  }
+
   const origin = req.headers.origin;
 
   if (origin && isAllowedAuthOrigin(origin)) {

@@ -47,6 +47,7 @@ export default async function handler(
         name: true,
         image: true,
         emailVerified: true,
+        role: true,
         createdAt: true,
         updatedAt: true,
       },
