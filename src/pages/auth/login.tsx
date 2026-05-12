@@ -6,10 +6,9 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
 import { useAccounts } from "@/hooks/use-accounts";
-import { createMailboxAuthClient } from "@/lib/auth-client";
+import { createMailboxAuthClient, signIn, signOut } from "@/lib/auth-client";
 import {
   getCurrentSubdomain,
   getMailboxEmail,
@@ -28,6 +27,7 @@ export default function LoginPage() {
   const { addAccount } = useAccounts();
   const subdomain = getCurrentSubdomain();
   const subdomainEmail = subdomain ? getMailboxEmail(subdomain) : "";
+  const isMailboxLogin = Boolean(subdomainEmail);
 
   const [error, setError] = useState("");
 
@@ -45,16 +45,55 @@ export default function LoginPage() {
       const email = subdomainEmail || value.email.trim().toLowerCase();
       const parsedEmail = z.email().safeParse(email);
 
-      if (!parsedEmail.success || !isMailboxEmail(email)) {
+      if (!parsedEmail.success) {
+        setError("Enter a valid email address");
+        return;
+      }
+
+      if (subdomainEmail && !isMailboxEmail(email)) {
         setError(`Enter a valid @${getMailDomain()} email address`);
         return;
       }
 
       try {
+        if (!subdomainEmail) {
+          const result = await signIn.email({
+            email,
+            password: value.password,
+          });
+
+          if (result.error) {
+            setError(result.error.message || "Sign in failed");
+            return;
+          }
+
+          const adminResponse = await fetch("/api/users", {
+            credentials: "include",
+          });
+
+          if (!adminResponse.ok) {
+            await signOut();
+            setError("Admin access required");
+            return;
+          }
+
+          const adminData = (await adminResponse.json()) as {
+            user?: { isAdmin?: boolean };
+          };
+
+          if (!adminData.user?.isAdmin) {
+            await signOut();
+            setError("Admin access required");
+            return;
+          }
+
+          window.location.href = "/admin";
+          return;
+        }
+
         const targetSubdomain = getSubdomainFromEmail(email);
         const targetOrigin = getMailboxOrigin(targetSubdomain);
         const mailboxAuthClient = createMailboxAuthClient(targetOrigin);
-
         const result = await mailboxAuthClient.signIn.email({
           email,
           password: value.password,
@@ -77,10 +116,12 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-6 rounded-xl bg-overlay p-8 shadow-lg">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-fg">
-            Sign in
+            {isMailboxLogin ? "Sign in" : "Admin sign in"}
           </h1>
           <p className="text-sm text-muted-fg">
-            Enter your password to continue
+            {isMailboxLogin
+              ? "Enter your password to continue"
+              : "Use an admin account to manage users"}
           </p>
         </div>
 
@@ -104,7 +145,7 @@ export default function LoginPage() {
                   <Label>Email</Label>
                   <Input
                     type="email"
-                    placeholder={`mail@${getMailDomain()}`}
+                    placeholder={`admin@${getMailDomain()}`}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -148,10 +189,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-sm text-muted-fg">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
-            Register
-          </Link>
+          Accounts are created by an administrator.
         </p>
       </div>
     </div>

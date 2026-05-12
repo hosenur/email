@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminUser } from "@/lib/admin";
 import { getScopedSession } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
 
@@ -33,6 +33,7 @@ export default async function handler(
             name: true,
             signature: true,
             image: true,
+            role: true,
           },
         });
 
@@ -40,7 +41,7 @@ export default async function handler(
           user: user
             ? {
                 ...user,
-                isAdmin: isAdminEmail(user.email),
+                isAdmin: isAdminUser(user),
               }
             : null,
         });

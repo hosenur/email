@@ -1,6 +1,7 @@
 "use client";
 
 import Head from "next/head";
+import { type FormEvent, useState } from "react";
 import useSWR from "swr";
 import {
   InboxIcon,
@@ -11,8 +12,12 @@ import {
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TextField } from "@/components/ui/text-field";
 import { AuthLayout } from "@/layout/auth-layout";
+import { getMailDomain } from "@/lib/mailbox";
 
 interface AdminMetric {
   users: number;
@@ -40,6 +45,7 @@ interface AdminUser {
   name: string;
   image: string | null;
   emailVerified: boolean;
+  role: string | null;
   createdAt: string;
   updatedAt: string;
   receivedCount: number;
@@ -76,6 +82,15 @@ interface AdminOverviewResponse {
 
 interface FetchError extends Error {
   status?: number;
+}
+
+interface CreateUserResponse {
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
+  mailboxUrl: string;
 }
 
 const fetcher = async (url: string) => {
@@ -203,6 +218,138 @@ function ProviderPanel({ config }: { config: ProviderConfig }) {
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+function CreateUserPanel({ onCreated }: { onCreated: () => void }) {
+  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState("");
+  const [createdUser, setCreatedUser] = useState<CreateUserResponse | null>(
+    null,
+  );
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setCreatedUser(null);
+    setIsCreating(true);
+
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          name,
+          password,
+        }),
+      });
+      const data = (await response.json()) as
+        | CreateUserResponse
+        | { error?: string };
+
+      if (!response.ok) {
+        setError(
+          "error" in data && data.error ? data.error : "Unable to create user",
+        );
+        return;
+      }
+
+      setCreatedUser(data as CreateUserResponse);
+      setUsername("");
+      setName("");
+      setPassword("");
+      onCreated();
+    } catch {
+      setError("Unable to create user");
+    } finally {
+      setIsCreating(false);
+    }
+  }
+
+  return (
+    <section className="rounded-lg border border-border bg-secondary/40 p-4">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="font-medium text-fg text-sm">Create user</h2>
+          <p className="text-muted-fg text-sm">
+            Create a mailbox account and share the mailbox URL.
+          </p>
+        </div>
+        <Badge intent="outline" isCircle={false}>
+          Admin only
+        </Badge>
+      </div>
+
+      <form
+        className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
+        onSubmit={handleSubmit}
+      >
+        <TextField>
+          <Label>Username</Label>
+          <div className="flex">
+            <Input
+              type="text"
+              value={username}
+              placeholder="mailbox"
+              onChange={(event) =>
+                setUsername(event.target.value.toLowerCase())
+              }
+              className="rounded-r-none"
+              required
+            />
+            <span className="inline-flex items-center rounded-r-lg border border-l-0 border-border bg-secondary px-3 text-muted-fg text-sm">
+              @{getMailDomain()}
+            </span>
+          </div>
+        </TextField>
+        <TextField>
+          <Label>Name</Label>
+          <Input
+            type="text"
+            value={name}
+            placeholder="Full name"
+            onChange={(event) => setName(event.target.value)}
+            required
+          />
+        </TextField>
+        <TextField>
+          <Label>Password</Label>
+          <Input
+            type="password"
+            value={password}
+            placeholder="Temporary password"
+            onChange={(event) => setPassword(event.target.value)}
+            minLength={8}
+            required
+          />
+        </TextField>
+        <div className="flex items-end">
+          <Button type="submit" isDisabled={isCreating} className="w-full">
+            {isCreating ? "Creating..." : "Create"}
+          </Button>
+        </div>
+      </form>
+
+      {error ? <p className="mt-3 text-danger text-sm">{error}</p> : null}
+      {createdUser ? (
+        <p className="mt-3 text-muted-fg text-sm">
+          Created {createdUser.user.email} ·{" "}
+          <a
+            className="text-primary hover:underline"
+            href={createdUser.mailboxUrl}
+          >
+            {createdUser.mailboxUrl}
+          </a>
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -447,7 +594,10 @@ export default function AdminPage() {
               </div>
 
               <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
-                <UsersTable users={data.users} />
+                <div className="space-y-4">
+                  <CreateUserPanel onCreated={() => void mutate()} />
+                  <UsersTable users={data.users} />
+                </div>
                 <div className="space-y-4">
                   <ProviderPanel config={data.providerConfig} />
                   <CategoryPanel

@@ -2,6 +2,7 @@ import { glass } from "@dicebear/collection";
 import { createAvatar } from "@dicebear/core";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins";
 import { getMailDomain, getRootDomain, getRootDomainHost } from "@/lib/mailbox";
 import { prisma } from "./prisma";
 
@@ -19,6 +20,9 @@ const trustedOrigins = Array.from(
     `https://${MAIL_DOMAIN}`,
     `http://*.${MAIL_DOMAIN}`,
     `https://*.${MAIL_DOMAIN}`,
+    "http://localhost:3000",
+    "http://*.localhost:3000",
+    "http://127.0.0.1:3000",
   ]),
 );
 
@@ -29,6 +33,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [admin()],
   trustedOrigins,
   databaseHooks: {
     user: {

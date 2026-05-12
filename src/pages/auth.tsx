@@ -7,7 +7,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/components/ui/link";
 import { Loader } from "@/components/ui/loader";
 import { TextField } from "@/components/ui/text-field";
 import { useAccounts } from "@/hooks/use-accounts";
@@ -131,10 +130,7 @@ export default function SubdomainAuthPage() {
         </form>
 
         <p className="text-center text-sm text-muted-fg">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
-            Register
-          </Link>
+          Accounts are created by an administrator.
         </p>
       </div>
     </div>
