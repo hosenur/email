@@ -1,16 +1,21 @@
 "use client";
 
+import { useForm } from "@tanstack/react-form";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
 import { signUp } from "@/lib/auth-client";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
+import { getRootHostname } from "@/lib/env";
+import { getTenantUrl } from "@/lib/tenant";
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
+export const Route = createFileRoute("/auth/register")({
+  component: RegisterPage,
+});
 
 const registerSchema = z
   .object({
@@ -26,6 +31,7 @@ const registerSchema = z
 
 export default function RegisterPage() {
   const [error, setError] = useState("");
+  const rootHostname = getRootHostname();
 
   const form = useForm({
     defaultValues: {
@@ -40,7 +46,7 @@ export default function RegisterPage() {
     onSubmit: async ({ value }) => {
       setError("");
 
-      const email = `${value.username}@${ROOT_DOMAIN}`;
+      const email = `${value.username}@${rootHostname}`;
 
       try {
         const result = await signUp.email({
@@ -52,12 +58,7 @@ export default function RegisterPage() {
         if (result.error) {
           setError(result.error.message || "Registration failed");
         } else {
-          // Redirect to the user's subdomain
-          if (ROOT_DOMAIN.includes("localhost")) {
-            window.location.href = `http://${value.username}.localhost:3000`;
-          } else {
-            window.location.href = `https://${value.username}.${ROOT_DOMAIN}`;
-          }
+          window.location.href = getTenantUrl(email);
         }
       } catch {
         setError("An unexpected error occurred");
@@ -85,9 +86,8 @@ export default function RegisterPage() {
           }}
           className="space-y-4"
         >
-          <form.Field
-            name="username"
-            children={(field) => (
+          <form.Field name="username">
+            {(field) => (
               <TextField>
                 <Label>Username</Label>
                 <div className="flex">
@@ -102,7 +102,7 @@ export default function RegisterPage() {
                     className="rounded-r-none"
                   />
                   <span className="inline-flex items-center rounded-r-lg border border-l-0 border-border bg-secondary px-3 text-sm text-muted-fg">
-                    @{ROOT_DOMAIN}
+                    @{rootHostname}
                   </span>
                 </div>
                 {field.state.meta.errors ? (
@@ -112,11 +112,10 @@ export default function RegisterPage() {
                 ) : null}
               </TextField>
             )}
-          />
+          </form.Field>
 
-          <form.Field
-            name="name"
-            children={(field) => (
+          <form.Field name="name">
+            {(field) => (
               <TextField>
                 <Label>Name</Label>
                 <Input
@@ -133,11 +132,10 @@ export default function RegisterPage() {
                 ) : null}
               </TextField>
             )}
-          />
+          </form.Field>
 
-          <form.Field
-            name="password"
-            children={(field) => (
+          <form.Field name="password">
+            {(field) => (
               <TextField>
                 <Label>Password</Label>
                 <Input
@@ -154,11 +152,10 @@ export default function RegisterPage() {
                 ) : null}
               </TextField>
             )}
-          />
+          </form.Field>
 
-          <form.Field
-            name="confirmPassword"
-            children={(field) => (
+          <form.Field name="confirmPassword">
+            {(field) => (
               <TextField>
                 <Label>Confirm Password</Label>
                 <Input
@@ -175,18 +172,19 @@ export default function RegisterPage() {
                 ) : null}
               </TextField>
             )}
-          />
+          </form.Field>
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
+          >
+            {([canSubmit, isSubmitting]) => (
               <Button type="submit" className="w-full" isDisabled={!canSubmit}>
                 {isSubmitting ? "Creating account..." : "Create account"}
               </Button>
             )}
-          />
+          </form.Subscribe>
         </form>
 
         <p className="text-center text-sm text-muted-fg">

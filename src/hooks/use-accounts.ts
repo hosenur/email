@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { getRootDomain, getRootHostname, getRootProtocol } from "@/lib/env";
 
 const ACCOUNTS_COOKIE_NAME = "hosenur_accounts";
 
@@ -14,8 +15,13 @@ function setCookie(name: string, value: string, days: number) {
   if (typeof document === "undefined") return;
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  // Set cookie on root domain so it's shared across subdomains
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; domain=.hosenur.email; SameSite=Lax`;
+  const rootHostname = getRootHostname();
+  const domain =
+    rootHostname === "localhost" || rootHostname === "127.0.0.1"
+      ? ""
+      : `; domain=.${rootHostname}`;
+
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/${domain}; SameSite=Lax`;
 }
 
 function getStoredAccounts(): string[] {
@@ -70,5 +76,6 @@ export function getSubdomainFromEmail(email: string): string {
 
 export function getAccountUrl(email: string): string {
   const subdomain = getSubdomainFromEmail(email);
-  return `https://${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
+  const rootDomain = getRootDomain();
+  return `${getRootProtocol(rootDomain)}://${subdomain}.${rootDomain}`;
 }

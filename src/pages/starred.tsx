@@ -1,7 +1,12 @@
 "use client";
 
+import { createFileRoute } from "@tanstack/react-router";
 import StarIcon from "@/components/icons/star";
 import { DashboardLayout } from "@/layout/dashboard-layout";
+
+export const Route = createFileRoute("/starred")({
+  component: StarredPage,
+});
 
 export default function StarredPage() {
   return (

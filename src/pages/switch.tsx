@@ -1,15 +1,30 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+export const Route = createFileRoute("/switch")({
+  validateSearch: (search): SwitchSearch => ({
+    fromImage:
+      typeof search.fromImage === "string" ? search.fromImage : undefined,
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    toImage: typeof search.toImage === "string" ? search.toImage : undefined,
+  }),
+  component: SwitchPage,
+});
+
+interface SwitchSearch {
+  redirect?: string;
+  fromImage?: string;
+  toImage?: string;
+}
+
 export default function SwitchPage() {
-  const router = useRouter();
-  const { redirect, fromImage, toImage } = router.query;
+  const { redirect, fromImage, toImage } = Route.useSearch();
 
   useEffect(() => {
     if (redirect) {
       const timer = setTimeout(() => {
-        window.location.href = redirect as string;
+        window.location.href = redirect;
       }, 1500);
       return () => clearTimeout(timer);
     }
@@ -33,7 +48,7 @@ export default function SwitchPage() {
       >
         {fromImage ? (
           <img
-            src={fromImage as string}
+            src={fromImage}
             alt="From"
             className="h-full w-full object-cover"
           />
@@ -63,11 +78,7 @@ export default function SwitchPage() {
         className="relative flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-secondary shadow-xl"
       >
         {toImage ? (
-          <img
-            src={toImage as string}
-            alt="To"
-            className="h-full w-full object-cover"
-          />
+          <img src={toImage} alt="To" className="h-full w-full object-cover" />
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-orange-400 to-pink-600" />
         )}

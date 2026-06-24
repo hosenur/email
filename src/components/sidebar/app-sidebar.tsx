@@ -4,8 +4,7 @@ import {
   ChevronUpDownIcon,
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter } from "next/router";
-import { useTheme } from "next-themes";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ComposeEmail } from "@/components/compose-email";
 import ArchiveIcon from "@/components/icons/archive";
@@ -17,6 +16,7 @@ import SparkleIcon from "@/components/icons/sparkle";
 import StarIcon from "@/components/icons/star";
 import ThemeIcon from "@/components/icons/theme";
 import TrashIcon from "@/components/icons/trash";
+import { useTheme } from "@/components/theme-provider";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +32,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarItem,
   SidebarLabel,
   SidebarRail,
@@ -39,20 +40,21 @@ import {
   SidebarSectionGroup,
 } from "@/components/ui/sidebar";
 import { signOut, useSession } from "@/lib/auth-client";
+import { getRootDomain, getRootProtocol } from "@/lib/env";
 
 export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
-  const router = useRouter();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const [isComposeOpen, setIsComposeOpen] = useState(false);
 
   async function handleSignOut() {
     await signOut();
-    const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-    const protocol = ROOT_DOMAIN.includes("localhost") ? "http" : "https";
-    window.location.href = `${protocol}://${ROOT_DOMAIN}`;
+    const rootDomain = getRootDomain();
+    window.location.href = `${getRootProtocol(rootDomain)}://${rootDomain}`;
   }
 
   function toggleTheme() {
@@ -61,13 +63,73 @@ export default function AppSidebar(
 
   return (
     <Sidebar {...props}>
+      <SidebarHeader>
+        <Menu>
+          <MenuTrigger
+            className="flex w-full items-center justify-between"
+            aria-label="Profile"
+          >
+            <div className="flex items-center gap-x-2">
+              <Avatar
+                className="size-8 *:size-8 group-data-[state=collapsed]:size-6 group-data-[state=collapsed]:*:size-6"
+                isSquare
+                src={session?.user?.image}
+                initials={session?.user?.name?.charAt(0) || "U"}
+              />
+              <div className="in-data-[collapsible=dock]:hidden text-sm">
+                <SidebarLabel>{session?.user?.name || "User"}</SidebarLabel>
+                <span className="-mt-0.5 block text-muted-fg">
+                  {session?.user?.email}
+                </span>
+              </div>
+            </div>
+            <ChevronUpDownIcon
+              data-slot="chevron"
+              className="size-4 shrink-0 in-data-[collapsible=dock]:hidden"
+            />
+          </MenuTrigger>
+          <MenuContent
+            className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
+            placement="bottom right"
+          >
+            <MenuSection>
+              <MenuHeader separator>
+                <span className="block">{session?.user?.name || "User"}</span>
+                <span className="font-normal text-muted-fg">
+                  {session?.user?.email}
+                </span>
+              </MenuHeader>
+            </MenuSection>
+
+            <MenuItem
+              href="#settings"
+              className="gap-3"
+              onClick={() => {
+                navigate({ to: "/settings" });
+              }}
+            >
+              <SettingsIcon className="h-4 w-4" />
+              Settings
+            </MenuItem>
+            <MenuItem onAction={toggleTheme} className="gap-3">
+              <ThemeIcon className="h-4 w-4" />
+              Toggle theme
+            </MenuItem>
+            <MenuSeparator />
+            <MenuItem onAction={handleSignOut} className="gap-3">
+              <SignOutIcon className="h-4 w-4" />
+              Sign out
+            </MenuItem>
+          </MenuContent>
+        </Menu>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarSectionGroup>
           <SidebarSection>
             <SidebarItem
               tooltip="Inbox"
               href="/inbox"
-              isCurrent={router.pathname.includes("/inbox")}
+              isCurrent={location.pathname.includes("/inbox")}
               className="gap-3"
             >
               <InboxIcon className="h-4 w-4" />
@@ -84,7 +146,7 @@ export default function AppSidebar(
             <SidebarItem
               tooltip="Sent"
               href="/sent"
-              isCurrent={router.pathname.includes("/sent")}
+              isCurrent={location.pathname.includes("/sent")}
               className="gap-3"
             >
               <SentIcon className="h-4 w-4" />
@@ -105,67 +167,13 @@ export default function AppSidebar(
       <SidebarFooter className="flex flex-col gap-4">
         <Button
           intent="secondary"
-          className="w-full"
+          className="w-full group-data-[state=collapsed]:size-8 group-data-[state=collapsed]:px-0"
           onPress={() => setIsComposeOpen(true)}
+          aria-label="Compose"
         >
-          <PencilSquareIcon className="mr-2 size-4" />
-          Compose
+          <PencilSquareIcon className="size-4" />
+          <span className="in-data-[collapsible=dock]:hidden">Compose</span>
         </Button>
-        <Menu>
-          <MenuTrigger
-            className="flex w-full items-center justify-between"
-            aria-label="Profile"
-          >
-            <div className="flex items-center gap-x-2">
-              <Avatar
-                className="size-8 *:size-8 group-data-[state=collapsed]:size-6 group-data-[state=collapsed]:*:size-6"
-                isSquare
-                src={session?.user?.image}
-                initials={session?.user?.name?.charAt(0) || "U"}
-              />
-              <div className="in-data-[collapsible=dock]:hidden text-sm">
-                <SidebarLabel>{session?.user?.name || "User"}</SidebarLabel>
-                <span className="-mt-0.5 block text-muted-fg">
-                  {session?.user?.email}
-                </span>
-              </div>
-            </div>
-            <ChevronUpDownIcon data-slot="chevron" className="h-4 w-4" />
-          </MenuTrigger>
-          <MenuContent
-            className="in-data-[sidebar-collapsible=collapsed]:min-w-56 min-w-(--trigger-width)"
-            placement="bottom right"
-          >
-            <MenuSection>
-              <MenuHeader separator>
-                <span className="block">{session?.user?.name || "User"}</span>
-                <span className="font-normal text-muted-fg">
-                  {session?.user?.email}
-                </span>
-              </MenuHeader>
-            </MenuSection>
-
-            <MenuItem
-              href="#settings"
-              className="gap-3"
-              onClick={() => {
-                router.push("/settings");
-              }}
-            >
-              <SettingsIcon className="h-4 w-4" />
-              Settings
-            </MenuItem>
-            <MenuItem onAction={toggleTheme} className="gap-3">
-              <ThemeIcon className="h-4 w-4" />
-              Toggle theme
-            </MenuItem>
-            <MenuSeparator />
-            <MenuItem onAction={handleSignOut} className="gap-3">
-              <SignOutIcon className="h-4 w-4" />
-              Sign out
-            </MenuItem>
-          </MenuContent>
-        </Menu>
       </SidebarFooter>
       <SidebarRail />
       <ComposeEmail isOpen={isComposeOpen} onOpenChange={setIsComposeOpen} />

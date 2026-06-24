@@ -1,8 +1,8 @@
 "use client";
 
-import { RouterProvider } from "react-aria-components";
-import { useRouter } from "next/router";
+import { useRouter } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { RouterProvider } from "react-aria-components";
 
 export function ClientSideRoutingProvider({
   children,
@@ -14,7 +14,7 @@ export function ClientSideRoutingProvider({
   return (
     <RouterProvider
       navigate={(href: string) => {
-        router.push(href);
+        router.navigate({ to: href });
       }}
     >
       {children}

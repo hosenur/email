@@ -1,11 +1,16 @@
 "use client";
 
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import SettingsIcon from "@/components/icons/settings";
-import SettingsLayout from "@/layout/settings-layout";
-import { Textarea } from "@/components/ui/textarea";
-import { useTheme } from "next-themes";
 import useSWR from "swr";
+import SettingsIcon from "@/components/icons/settings";
+import { type Theme, useTheme } from "@/components/theme-provider";
+import { Textarea } from "@/components/ui/textarea";
+import SettingsLayout from "@/layout/settings-layout";
+
+export const Route = createFileRoute("/settings")({
+  component: SettingsPage,
+});
 
 interface UserResponse {
   user: {
@@ -25,7 +30,7 @@ export default function SettingsPage() {
   const [signature, setSignature] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data, error, isLoading, mutate } = useSWR<UserResponse>(
+  const { data, isLoading, mutate } = useSWR<UserResponse>(
     "/api/users",
     fetcher,
   );
@@ -89,7 +94,7 @@ export default function SettingsPage() {
                 </div>
                 <select
                   value={theme}
-                  onChange={(e) => setTheme(e.target.value)}
+                  onChange={(e) => setTheme(e.target.value as Theme)}
                   className="rounded-md border border-border bg-bg px-3 py-2 text-sm text-fg"
                 >
                   <option value="light">Light</option>

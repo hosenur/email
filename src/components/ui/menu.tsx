@@ -1,4 +1,5 @@
 import { CheckIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
+import { createLink } from "@tanstack/react-router";
 import type {
   ButtonProps,
   MenuItemProps as MenuItemPrimitiveProps,
@@ -101,11 +102,16 @@ const MenuContent = <T extends object>({
   );
 };
 
-interface MenuItemProps
+interface MenuItemBaseProps
   extends MenuItemPrimitiveProps,
     VariantProps<typeof dropdownItemStyles> {}
 
-const MenuItem = ({ className, intent, children, ...props }: MenuItemProps) => {
+const InternalMenuItem = ({
+  className,
+  intent,
+  children,
+  ...props
+}: MenuItemBaseProps) => {
   const textValue =
     props.textValue || (typeof children === "string" ? children : undefined);
   return (
@@ -170,6 +176,22 @@ const MenuItem = ({ className, intent, children, ...props }: MenuItemProps) => {
     </MenuItemPrimitive>
   );
 };
+
+const RouterMenuItem = createLink(InternalMenuItem);
+
+type RouterMenuItemProps = React.ComponentProps<typeof RouterMenuItem>;
+type RouterMenuItemOptions = Partial<
+  Omit<RouterMenuItemProps, keyof MenuItemBaseProps | "children" | "className">
+>;
+type MenuItemProps = MenuItemBaseProps & RouterMenuItemOptions;
+
+function MenuItem(props: MenuItemProps) {
+  if ("to" in props && props.to !== undefined) {
+    return <RouterMenuItem {...(props as RouterMenuItemProps)} />;
+  }
+
+  return <InternalMenuItem {...props} />;
+}
 
 export interface MenuHeaderProps extends React.ComponentProps<typeof Header> {
   separator?: boolean;

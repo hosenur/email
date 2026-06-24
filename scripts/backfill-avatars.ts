@@ -1,6 +1,6 @@
-import { createAvatar } from "@dicebear/core";
 import { glass } from "@dicebear/collection";
-import { prisma } from "../src/lib/prisma";
+import { createAvatar } from "@dicebear/core";
+import { prisma } from "../src/server/lib/db";
 
 async function backfillAvatars() {
   console.log("Finding users without avatars...");

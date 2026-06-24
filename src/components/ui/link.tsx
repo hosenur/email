@@ -1,5 +1,6 @@
 "use client";
 
+import { createLink } from "@tanstack/react-router";
 import {
   Link as LinkPrimitive,
   type LinkProps as LinkPrimitiveProps,
@@ -10,7 +11,7 @@ interface LinkProps extends LinkPrimitiveProps {
   ref?: React.RefObject<HTMLAnchorElement>;
 }
 
-const Link = ({ className, ref, ...props }: LinkProps) => {
+const InternalLink = ({ className, ref, ...props }: LinkProps) => {
   return (
     <LinkPrimitive
       ref={ref}
@@ -28,5 +29,21 @@ const Link = ({ className, ref, ...props }: LinkProps) => {
   );
 };
 
-export type { LinkProps };
+const RouterLink = createLink(InternalLink);
+
+type RouterLinkProps = React.ComponentProps<typeof RouterLink>;
+type RouterLinkOptions = Partial<
+  Omit<RouterLinkProps, keyof LinkProps | "children" | "className">
+>;
+type AppLinkProps = LinkProps & RouterLinkOptions;
+
+function Link(props: AppLinkProps) {
+  if ("to" in props && props.to !== undefined) {
+    return <RouterLink {...(props as RouterLinkProps)} />;
+  }
+
+  return <InternalLink {...props} />;
+}
+
+export type { AppLinkProps as LinkProps };
 export { Link };

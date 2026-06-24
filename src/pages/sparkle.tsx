@@ -1,7 +1,12 @@
 "use client";
 
+import { createFileRoute } from "@tanstack/react-router";
 import SparkleIcon from "@/components/icons/sparkle";
 import { DashboardLayout } from "@/layout/dashboard-layout";
+
+export const Route = createFileRoute("/sparkle")({
+  component: SparklePage,
+});
 
 export default function SparklePage() {
   return (

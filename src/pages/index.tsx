@@ -1,10 +1,8 @@
 "use client";
 
-import { motion, AnimatePresence } from "motion/react";
-import { useState, useEffect } from "react";
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
 
 import BellIcon from "@/components/icons/bell";
 import LinkIcon from "@/components/icons/link";
@@ -13,6 +11,21 @@ import ShieldIcon from "@/components/icons/shield";
 import SparkleIcon from "@/components/icons/sparkle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { getSubdomainFromHost } from "@/lib/tenant";
+
+export const Route = createFileRoute("/")({
+  beforeLoad: () => {
+    if (
+      typeof window !== "undefined" &&
+      getSubdomainFromHost(window.location.host)
+    ) {
+      throw redirect({ to: "/inbox" });
+    }
+  },
+  component: Home,
+});
+
+const names = ["john", "sarah", "team", "hello", "info", "support"];
 
 const heroFeatures = [
   {
@@ -33,7 +46,7 @@ const heroFeatures = [
   {
     icon: PaletteIcon,
     title: "Modern stack",
-    description: "Next.js, React, Tailwind, Prisma",
+    description: "Vite, Nitro, React, Tailwind, Prisma",
   },
 ];
 
@@ -65,7 +78,6 @@ const features = [
 ];
 
 export default function Home() {
-  const names = ["john", "sarah", "team", "hello", "info", "support"];
   const [nameIndex, setNameIndex] = useState(0);
 
   useEffect(() => {
@@ -77,15 +89,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#fbf1c7] text-[#3c3836] font-['Google_Sans'] selection:bg-[#d65d0e]/20 selection:text-[#d65d0e]">
-      <Head>
-        <style>{`@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');`}</style>
-        <title>hosenur.email - Self-hosted Email for Your Domain</title>
-        <meta
-          name="description"
-          content="Open-source, self-hosted email platform. Own your data. Create professional email addresses like you@yourdomain.com"
-        />
-      </Head>
-
       <main>
         <section className="pt-20 pb-16 md:pt-32 md:pb-24">
           <div className="max-w-6xl mx-auto px-6">
@@ -137,7 +140,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-wrap gap-4">
-                  <Link href="https://vercel.com/new/clone?repository-url=https://github.com/hosenur/email">
+                  <a href="https://vercel.com/new/clone?repository-url=https://github.com/hosenur/email">
                     <Button
                       size="lg"
                       className="h-12 px-6 gap-2 bg-[#d65d0e] text-white hover:bg-[#d65d0e]/90 border-transparent"
@@ -156,7 +159,7 @@ export default function Home() {
                       </svg>
                       Deploy to Vercel
                     </Button>
-                  </Link>
+                  </a>
                   <a
                     href="https://github.com/hosenur/email"
                     target="_blank"
@@ -208,13 +211,10 @@ export default function Home() {
 
             <div className="mt-16 md:mt-24">
               <div className="relative rounded-2xl border border-[#d5c4a1] shadow-2xl overflow-hidden bg-[#fbf1c7]">
-                <Image
+                <img
                   src="/banner.png"
-                  width={1200}
-                  height={600}
                   alt="hosenur.email interface"
                   className="w-full h-auto"
-                  priority
                 />
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {features.map((feature, i) => {
+              {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
                   <div
@@ -266,7 +266,7 @@ export default function Home() {
                 lock-in.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Link href="https://vercel.com/new/clone?repository-url=https://github.com/hosenur/email">
+                <a href="https://vercel.com/new/clone?repository-url=https://github.com/hosenur/email">
                   <Button
                     size="lg"
                     className="h-12 px-8 gap-2 bg-[#d65d0e] text-white hover:bg-[#d65d0e]/90 border-transparent"
@@ -285,7 +285,7 @@ export default function Home() {
                     </svg>
                     Deploy to Vercel
                   </Button>
-                </Link>
+                </a>
                 <a
                   href="https://github.com/hosenur/email"
                   target="_blank"

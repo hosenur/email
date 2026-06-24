@@ -1,13 +1,34 @@
 "use client";
 
+import {
+  ArchiveBoxIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  FunnelIcon,
+  StarIcon,
+  TagIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import { useQueryState } from "nuqs";
+import { createFileRoute } from "@tanstack/react-router";
 import useSWR, { mutate } from "swr";
 import SparkleIcon from "@/components/icons/sparkle";
 import UfoIcon from "@/components/icons/ufo";
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Heading } from "@/components/ui/heading";
 import { Loader } from "@/components/ui/loader";
+import { Tooltip, TooltipContent } from "@/components/ui/tooltip";
+import { useSelectedEmailId } from "@/hooks/use-selected-email-id";
 import { DashboardLayout } from "@/layout/dashboard-layout";
+
+export const Route = createFileRoute("/inbox")({
+  validateSearch: (search): { id?: string } => ({
+    id: typeof search.id === "string" ? search.id : undefined,
+  }),
+  component: InboxPage,
+});
 
 interface Email {
   id: string;
@@ -64,8 +85,39 @@ function extractSenderEmail(from: string): string {
   return from;
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+interface ToolbarButtonProps {
+  label: string;
+  children: React.ReactNode;
+  isDisabled?: boolean;
+}
+
+function ToolbarButton({ label, children, isDisabled }: ToolbarButtonProps) {
+  return (
+    <Tooltip>
+      <Button
+        aria-label={label}
+        intent="secondary"
+        isDisabled={isDisabled}
+        size="sq-sm"
+      >
+        {children}
+      </Button>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 function EmailViewer({ emailId }: { emailId: string }) {
-  const [, setSelectedId] = useQueryState("id");
+  const [, setSelectedId] = useSelectedEmailId();
   const { data, error, isLoading } = useSWR<EmailResponse>(
     `/api/emails/${emailId}`,
     fetcher,
@@ -97,50 +149,93 @@ function EmailViewer({ emailId }: { emailId: string }) {
   }
 
   const email = data.email;
+  const senderName = extractSenderName(email.from);
+  const senderEmail = extractSenderEmail(email.from);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="p-6">
-        <h1 className="mb-4 text-2xl font-semibold text-fg">
-          {email.subject || "No subject"}
-        </h1>
+    <div className="space-y-6 p-4 sm:p-6">
+      <div className="space-y-5">
+        <Button
+          className="sm:hidden"
+          intent="secondary"
+          onPress={() => setSelectedId(null)}
+          size="sm"
+        >
+          <ArrowLeftIcon className="size-4" />
+          Back
+        </Button>
 
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-fg">
-                {extractSenderName(email.from)}
-              </span>
-              <span className="text-sm text-muted-fg">
-                &lt;{extractSenderEmail(email.from)}&gt;
-              </span>
-            </div>
-            <div className="text-sm text-muted-fg">
-              To: {email.to.join(", ")}
-            </div>
-            {email.cc.length > 0 && (
-              <div className="text-sm text-muted-fg">
-                Cc: {email.cc.join(", ")}
+        <Heading level={2}>{email.subject || "No subject"}</Heading>
+
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 items-center gap-x-3">
+            <Avatar
+              alt={senderName}
+              initials={getInitials(senderName)}
+              isSquare
+              size="lg"
+            />
+            <div className="min-w-0">
+              <div className="truncate font-medium text-fg">{senderName}</div>
+              <div className="truncate text-muted-fg text-sm">
+                {senderEmail}
               </div>
-            )}
+              <div className="truncate text-muted-fg text-sm">
+                To: {email.to.join(", ")}
+              </div>
+              {email.cc.length > 0 && (
+                <div className="truncate text-muted-fg text-sm">
+                  Cc: {email.cc.join(", ")}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="text-sm text-muted-fg">
+          <div className="shrink-0 text-muted-fg text-sm">
             {formatDate(email.receivedAt)}
           </div>
         </div>
 
         {email.category && (
-          <div className="mt-3">
+          <div>
             <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium text-fg">
               {email.category}
             </span>
           </div>
         )}
+
+        <div className="flex flex-wrap justify-between gap-3">
+          <ButtonGroup className="flex-wrap">
+            <ToolbarButton label="Move to favorite" isDisabled>
+              <StarIcon />
+            </ToolbarButton>
+            <ToolbarButton label="Delete" isDisabled>
+              <TrashIcon />
+            </ToolbarButton>
+            <ToolbarButton label="Mark as" isDisabled>
+              <TagIcon />
+            </ToolbarButton>
+            <ToolbarButton label="Filter" isDisabled>
+              <FunnelIcon />
+            </ToolbarButton>
+            <ToolbarButton label="Archive" isDisabled>
+              <ArchiveBoxIcon />
+            </ToolbarButton>
+          </ButtonGroup>
+
+          <ButtonGroup>
+            <ToolbarButton label="Reply" isDisabled>
+              <ArrowUturnLeftIcon />
+            </ToolbarButton>
+            <ToolbarButton label="Forward" isDisabled>
+              <ArrowUturnRightIcon />
+            </ToolbarButton>
+          </ButtonGroup>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="space-y-6">
         {email.summary && (
-          <div className="mb-6 rounded-lg">
+          <div className="rounded-lg border border-border bg-muted/40 p-4">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-fg">
               <SparkleIcon className="h-4 w-4" />
               AI Summary
@@ -150,7 +245,7 @@ function EmailViewer({ emailId }: { emailId: string }) {
         )}
 
         {email.actionItems && email.actionItems.length > 0 && (
-          <div className="mb-6 rounded-lg bg-secondary/50 p-4">
+          <div className="rounded-lg border border-border bg-muted/40 p-4">
             <h3 className="mb-2 text-sm font-medium text-fg">Action Items</h3>
             <ul className="list-inside list-disc space-y-1 text-sm text-muted-fg">
               {email.actionItems.map((item) => (
@@ -213,8 +308,8 @@ function InboxEmpty() {
   );
 }
 
-export default function SubdomainInboxPage() {
-  const [selectedId] = useQueryState("id");
+export default function InboxPage() {
+  const [selectedId] = useSelectedEmailId();
 
   return (
     <DashboardLayout>

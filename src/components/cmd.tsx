@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryState } from "nuqs";
 import { useState } from "react";
 import useSWR from "swr";
 
@@ -14,7 +13,9 @@ import {
   CommandMenuSection,
 } from "@/components/ui/command-menu";
 import { getAccountUrl, useAccounts } from "@/hooks/use-accounts";
+import { useSelectedEmailId } from "@/hooks/use-selected-email-id";
 import { signOut, useSession } from "@/lib/auth-client";
+import { getRootDomain, getRootProtocol } from "@/lib/env";
 
 interface SearchEmail {
   id: string;
@@ -77,7 +78,7 @@ interface CmdProps {
 }
 
 export function Cmd({ isOpen, onOpenChange }: CmdProps) {
-  const [, setSelectedId] = useQueryState("id");
+  const [, setSelectedId] = useSelectedEmailId();
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session } = useSession();
   const { getOtherAccounts } = useAccounts();
@@ -107,9 +108,8 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
 
   async function handleSignOut() {
     await signOut();
-    const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "localhost:3000";
-    const protocol = ROOT_DOMAIN.includes("localhost") ? "http" : "https";
-    window.location.href = `${protocol}://${ROOT_DOMAIN}`;
+    const rootDomain = getRootDomain();
+    window.location.href = `${getRootProtocol(rootDomain)}://${rootDomain}`;
   }
 
   function handleSwitchAccount(email: string) {
@@ -174,28 +174,26 @@ export function Cmd({ isOpen, onOpenChange }: CmdProps) {
           </CommandMenuItem>
         </CommandMenuSection>
         {otherAccounts.length > 0 && (
-          <>
-            <CommandMenuSection label="Switch Account">
-              {otherAccounts.map((email) => {
-                const user = usersMap.get(email);
-                return (
-                  <CommandMenuItem
-                    key={email}
-                    textValue={email}
-                    onAction={() => handleSwitchAccount(email)}
-                    className="gap-2"
-                  >
-                    <Avatar
-                      src={user?.image}
-                      initials={user?.name?.charAt(0) || email.charAt(0)}
-                      size="xs"
-                    />
-                    <CommandMenuLabel>{email}</CommandMenuLabel>
-                  </CommandMenuItem>
-                );
-              })}
-            </CommandMenuSection>
-          </>
+          <CommandMenuSection label="Switch Account">
+            {otherAccounts.map((email) => {
+              const user = usersMap.get(email);
+              return (
+                <CommandMenuItem
+                  key={email}
+                  textValue={email}
+                  onAction={() => handleSwitchAccount(email)}
+                  className="gap-2"
+                >
+                  <Avatar
+                    src={user?.image}
+                    initials={user?.name?.charAt(0) || email.charAt(0)}
+                    size="xs"
+                  />
+                  <CommandMenuLabel>{email}</CommandMenuLabel>
+                </CommandMenuItem>
+              );
+            })}
+          </CommandMenuSection>
         )}
       </CommandMenuList>
     </CommandMenu>

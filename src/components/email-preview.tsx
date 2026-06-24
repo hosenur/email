@@ -29,10 +29,9 @@ function formatTime(dateString: string): string {
 
 interface EmailPreviewProps {
   email: Email;
-  selectedId: string | null;
 }
 
-export function EmailPreview({ email, selectedId }: EmailPreviewProps) {
+export function EmailPreview({ email }: EmailPreviewProps) {
   return (
     <div className="flex max-w-full flex-col gap-0.5 overflow-hidden py-1">
       <div className="flex items-center justify-between">
