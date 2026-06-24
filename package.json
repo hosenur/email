@@ -36,6 +36,7 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
     "motion": "^12.23.26",
+    "postal-mime": "^2.7.4",
     "react": "^19.2.7",
     "react-aria-components": "^1.14.0",
     "react-dom": "^19.2.7",
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@cloudflare/workers-types": "^4.20260624.1",
     "@tailwindcss/vite": "^4.3.1",
     "@tanstack/router-plugin": "^1.168.18",
     "@types/node": "^26.0.0",

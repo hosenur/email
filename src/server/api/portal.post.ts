@@ -1,17 +1,7 @@
 import { defineHandler, HTTPError } from "nitro";
 import { z } from "zod";
-import { EmailCategory } from "@/generated/prisma/enums";
-import { prisma } from "@/server/lib/db";
-import { mistral } from "@/server/lib/mistral";
+import { processInboundEmail } from "@/server/lib/inbound-email";
 import { resend } from "@/server/lib/resend";
-
-function extractEmail(from: string): string {
-  const match = from.match(/<(.+?)>$/);
-  if (match) {
-    return match[1];
-  }
-  return from;
-}
 
 const ResendPayloadSchema = z.object({
   created_at: z.string(),
@@ -46,45 +36,6 @@ const FetchedEmailSchema = z.object({
   attachments: z.array(z.any()).default([]),
 });
 
-async function analyzeEmail(subject: string, content: string) {
-  try {
-    const chatResponse = await mistral.chat.complete({
-      model: "mistral-large-latest",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Analyze the incoming email. Classify it, summarize it, and extract any action items. Return the result as a JSON object with the keys: 'category' (one of Work, Personal, Finance, Social, Promotions, Updates, Spam, Other), 'confidence' (number 0-1), 'summary' (string), and 'actionItems' (array of strings).",
-        },
-        {
-          role: "user",
-          content: `Subject: ${subject}\n\nBody:\n${content}`,
-        },
-      ],
-      responseFormat: { type: "json_object" },
-    });
-
-    if (chatResponse.choices?.[0]?.message?.content) {
-      const rawContent = chatResponse.choices[0].message.content;
-      const jsonString =
-        typeof rawContent === "string"
-          ? rawContent
-          : Array.isArray(rawContent)
-            ? rawContent
-                .map((chunk) => ("text" in chunk ? chunk.text : ""))
-                .join("")
-            : String(rawContent);
-
-      return JSON.parse(jsonString);
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Mistral API Error:", error);
-    return null;
-  }
-}
-
 export default defineHandler(async (event) => {
   const parseResult = ResendPayloadSchema.safeParse(await event.req.json());
 
@@ -110,64 +61,18 @@ export default defineHandler(async (event) => {
   }
 
   const fetchedEmail = emailParseResult.data;
-  const allRecipients = [
-    ...fetchedEmail.to.map(extractEmail),
-    ...fetchedEmail.cc.map(extractEmail),
-    ...fetchedEmail.bcc.map(extractEmail),
-  ];
-  const uniqueRecipients = [...new Set(allRecipients)];
-
-  const registeredUsers = await prisma.user.findMany({
-    where: { email: { in: uniqueRecipients } },
-    select: { email: true },
+  return processInboundEmail({
+    provider: "resend",
+    providerMessageId: payload.data.email_id,
+    messageId: fetchedEmail.message_id || payload.data.message_id,
+    from: fetchedEmail.from,
+    to: fetchedEmail.to,
+    cc: fetchedEmail.cc,
+    bcc: fetchedEmail.bcc,
+    replyTo: fetchedEmail.reply_to,
+    subject: fetchedEmail.subject,
+    text: fetchedEmail.text || null,
+    html: fetchedEmail.html || null,
+    receivedAt: fetchedEmail.created_at,
   });
-
-  if (registeredUsers.length === 0) {
-    return {
-      message: "Email skipped - no registered recipients",
-      recipients: uniqueRecipients,
-    };
-  }
-
-  const content = fetchedEmail.text || fetchedEmail.html || "No content";
-  const analysis = await analyzeEmail(fetchedEmail.subject, content);
-
-  let category: EmailCategory = EmailCategory.Other;
-  if (analysis?.category) {
-    const aiCategory = analysis.category as keyof typeof EmailCategory;
-    if (Object.values(EmailCategory).includes(EmailCategory[aiCategory])) {
-      category = EmailCategory[aiCategory];
-    }
-  }
-
-  const baseMessageId = fetchedEmail.message_id || payload.data.message_id;
-
-  const savedEmails = await Promise.all(
-    registeredUsers.map((user, index) =>
-      prisma.email.create({
-        data: {
-          messageId:
-            index === 0 ? baseMessageId : `${baseMessageId}-${user.email}`,
-          from: fetchedEmail.from,
-          fromEmail: extractEmail(fetchedEmail.from),
-          to: fetchedEmail.to,
-          bcc: fetchedEmail.bcc,
-          cc: fetchedEmail.cc,
-          recipient: user.email,
-          subject: fetchedEmail.subject,
-          textBody: fetchedEmail.text || null,
-          htmlBody: fetchedEmail.html || null,
-          receivedAt: new Date(fetchedEmail.created_at),
-          replyTo: fetchedEmail.reply_to,
-          opened: false,
-          category,
-          confidence: analysis?.confidence || 0,
-          summary: analysis?.summary || null,
-          actionItems: analysis?.actionItems || [],
-        },
-      }),
-    ),
-  );
-
-  return { analysis, savedEmails };
 });

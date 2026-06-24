@@ -1,7 +1,10 @@
 import { defineHandler, HTTPError } from "nitro";
 import { z } from "zod";
 import { prisma } from "@/server/lib/db";
-import { resend } from "@/server/lib/resend";
+import {
+  EmailDeliveryError,
+  sendOutboundEmail,
+} from "@/server/lib/email-delivery";
 import { requireTenantUser } from "@/server/lib/session";
 
 const AttachmentSchema = z.object({
@@ -30,50 +33,52 @@ export default defineHandler(async (event) => {
 
   const { to, cc, bcc, subject, body, replyTo, attachments } = parseResult.data;
 
-  const resendAttachments = attachments.map((attachment) => ({
-    filename: attachment.filename,
-    content: Buffer.from(attachment.content, "base64"),
-    contentType: attachment.contentType,
-  }));
-
-  const { data, error } = await resend.emails.send({
-    from: `${user.name} <${user.email}>`,
-    to,
-    cc: cc.length > 0 ? cc : undefined,
-    bcc: bcc.length > 0 ? bcc : undefined,
-    subject,
-    text: body,
-    replyTo: replyTo || user.email,
-    attachments: resendAttachments.length > 0 ? resendAttachments : undefined,
-  });
-
-  if (error) {
-    console.error("Resend error:", error);
-    throw HTTPError.status(500, "Failed to send email");
-  }
-
-  await prisma.email.create({
-    data: {
-      messageId: data?.id || "",
-      recipient: to[0],
+  try {
+    const sendResult = await sendOutboundEmail({
       from: `${user.name} <${user.email}>`,
-      fromEmail: user.email,
       to,
       cc,
       bcc,
-      replyTo: replyTo ? [replyTo] : [user.email],
       subject,
-      textBody: body,
-      htmlBody: null,
-      receivedAt: new Date(),
-      opened: false,
-      category: "Other",
-      confidence: 0,
-    },
-  });
+      text: body,
+      replyTo: replyTo || user.email,
+      attachments,
+    });
 
-  return {
-    messageId: data?.id,
-    success: true,
-  };
+    await prisma.email.create({
+      data: {
+        messageId:
+          sendResult.messageId ||
+          `${sendResult.provider}:${Date.now()}:${crypto.randomUUID()}`,
+        recipient: to[0],
+        from: `${user.name} <${user.email}>`,
+        fromEmail: user.email,
+        to,
+        cc,
+        bcc,
+        replyTo: replyTo ? [replyTo] : [user.email],
+        subject,
+        textBody: body,
+        htmlBody: null,
+        receivedAt: new Date(),
+        opened: false,
+        category: "Other",
+        confidence: 0,
+      },
+    });
+
+    return {
+      messageId: sendResult.messageId,
+      provider: sendResult.provider,
+      success: true,
+    };
+  } catch (error) {
+    if (error instanceof EmailDeliveryError) {
+      console.error("Email delivery error:", error.details);
+      throw HTTPError.status(error.status, error.message);
+    }
+
+    console.error("Error sending email:", error);
+    throw HTTPError.status(500, "Internal server error");
+  }
 });

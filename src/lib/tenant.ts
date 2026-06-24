@@ -1,4 +1,9 @@
-import { getRootDomain, getRootHostname, getRootProtocol } from "@/lib/env";
+import {
+  getMailDomain,
+  getRootDomain,
+  getRootHostname,
+  getRootProtocol,
+} from "@/lib/env";
 
 function normalizeRootDomain(rootDomain = getRootDomain()): string {
   return getRootHostname(rootDomain);
@@ -25,7 +30,10 @@ export function getSubdomainFromHost(
   }
 
   const rootDomainFormatted = normalizeRootDomain(rootDomain);
+  const mailDomainFormatted = getRootHostname(getMailDomain(rootDomain));
   const rootHosts = new Set([
+    mailDomainFormatted,
+    `www.${mailDomainFormatted}`,
     rootDomainFormatted,
     `www.${rootDomainFormatted}`,
   ]);
@@ -34,8 +42,10 @@ export function getSubdomainFromHost(
     return null;
   }
 
-  if (hostname.endsWith(`.${rootDomainFormatted}`)) {
-    return hostname.replace(`.${rootDomainFormatted}`, "") || null;
+  for (const domain of [mailDomainFormatted, rootDomainFormatted]) {
+    if (hostname.endsWith(`.${domain}`)) {
+      return hostname.replace(`.${domain}`, "") || null;
+    }
   }
 
   return null;
@@ -57,16 +67,25 @@ export function isEmailAllowedForSubdomain(
 
   return (
     getEmailLocalPart(email) === subdomain.toLowerCase() &&
-    getEmailDomain(email) === normalizeRootDomain()
+    getEmailDomain(email) === getMailDomain().toLowerCase()
   );
 }
 
 export function getTenantEmail(subdomain: string): string {
-  return `${subdomain.toLowerCase()}@${normalizeRootDomain()}`;
+  return `${subdomain.toLowerCase()}@${getMailDomain().toLowerCase()}`;
 }
 
 export function getTenantUrl(email: string): string {
   const subdomain = getEmailLocalPart(email);
   const rootDomain = getRootDomain();
-  return `${getRootProtocol(rootDomain)}://${subdomain}.${rootDomain}`;
+  const mailDomain = getMailDomain(rootDomain);
+  const rootPort = rootDomain.includes(":") ? rootDomain.split(":")[1] : "";
+
+  if (mailDomain === "localhost") {
+    return `${getRootProtocol(rootDomain)}://${subdomain}.localhost${
+      rootPort ? `:${rootPort}` : ""
+    }`;
+  }
+
+  return `${getRootProtocol(rootDomain)}://${subdomain}.${mailDomain}`;
 }

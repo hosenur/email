@@ -7,7 +7,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/components/ui/link";
 import { TextField } from "@/components/ui/text-field";
 import { signIn } from "@/lib/auth-client";
 import { getSubdomainFromHost, getTenantEmail } from "@/lib/tenant";
@@ -125,10 +124,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-sm text-muted-fg">
-          Don't have an account?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
-            Register
-          </Link>
+          Contact an administrator to create a mailbox.
         </p>
       </div>
     </div>

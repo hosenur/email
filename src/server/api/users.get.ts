@@ -1,4 +1,5 @@
 import { defineHandler } from "nitro";
+import { isAdminUser } from "@/server/lib/admin";
 import { prisma } from "@/server/lib/db";
 import { requireTenantUser } from "@/server/lib/session";
 
@@ -17,10 +18,18 @@ export default defineHandler(async (event) => {
         name: true,
         signature: true,
         image: true,
+        role: true,
       },
     });
 
-    return { user: currentUser };
+    return {
+      user: currentUser
+        ? {
+            ...currentUser,
+            isAdmin: isAdminUser(currentUser),
+          }
+        : null,
+    };
   }
 
   const emails = emailsParam.split(",").map((email) => email.trim());

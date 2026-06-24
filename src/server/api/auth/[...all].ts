@@ -8,6 +8,10 @@ function isEmailAuthPath(pathname: string) {
   );
 }
 
+function isEmailSignUpPath(pathname: string) {
+  return pathname.endsWith("/sign-up/email");
+}
+
 function getRequestHost(request: Request) {
   return (
     request.headers.get("x-forwarded-host") ||
@@ -32,6 +36,13 @@ async function getRequestEmail(request: Request) {
 export default defineHandler(async (event) => {
   const request = event.req;
   const url = new URL(request.url);
+
+  if (request.method === "POST" && isEmailSignUpPath(url.pathname)) {
+    throw HTTPError.status(
+      403,
+      "Account creation is restricted to administrators",
+    );
+  }
 
   if (request.method === "POST" && isEmailAuthPath(url.pathname)) {
     const subdomain = getSubdomainFromHost(getRequestHost(request));

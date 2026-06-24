@@ -12,6 +12,11 @@ export default defineConfig(({ mode }) => {
     env.ROOT_DOMAIN ||
     "localhost:3000";
   const rootHostname = rootDomain.split(":")[0].toLowerCase();
+  const mailDomain =
+    env.VITE_MAIL_DOMAIN ||
+    env.NEXT_PUBLIC_MAIL_DOMAIN ||
+    env.MAIL_DOMAIN ||
+    rootHostname;
   const allowedHosts =
     rootHostname === "localhost" || rootHostname === "127.0.0.1"
       ? []
@@ -19,6 +24,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     define: {
+      __MAIL_DOMAIN__: JSON.stringify(mailDomain),
       __ROOT_DOMAIN__: JSON.stringify(rootDomain),
     },
     preview: {

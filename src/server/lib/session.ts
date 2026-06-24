@@ -7,6 +7,7 @@ export type AuthenticatedUser = {
   id: string;
   image?: string | null;
   name: string;
+  role?: string | null;
 };
 
 type RequestEvent = {

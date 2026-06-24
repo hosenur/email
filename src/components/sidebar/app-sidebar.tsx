@@ -3,9 +3,11 @@
 import {
   ChevronUpDownIcon,
   PencilSquareIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import useSWR from "swr";
 import { ComposeEmail } from "@/components/compose-email";
 import ArchiveIcon from "@/components/icons/archive";
 import InboxIcon from "@/components/icons/inbox";
@@ -42,12 +44,27 @@ import {
 import { signOut, useSession } from "@/lib/auth-client";
 import { getRootDomain, getRootProtocol } from "@/lib/env";
 
+type CurrentUserResponse = {
+  user?: {
+    isAdmin?: boolean;
+  } | null;
+};
+
+const fetcher = (url: string) =>
+  fetch(url, { credentials: "include" }).then(
+    (response) => response.json() as Promise<CurrentUserResponse>,
+  );
+
 export default function AppSidebar(
   props: React.ComponentProps<typeof Sidebar>,
 ) {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: session } = useSession();
+  const { data: currentUserData } = useSWR<CurrentUserResponse>(
+    session?.user ? "/api/users" : null,
+    fetcher,
+  );
   const { theme, setTheme } = useTheme();
   const [isComposeOpen, setIsComposeOpen] = useState(false);
 
@@ -160,6 +177,17 @@ export default function AppSidebar(
               <TrashIcon className="h-4 w-4" />
               <SidebarLabel>Trash</SidebarLabel>
             </SidebarItem>
+            {currentUserData?.user?.isAdmin ? (
+              <SidebarItem
+                tooltip="Admin"
+                href="/admin"
+                isCurrent={location.pathname.includes("/admin")}
+                className="gap-3"
+              >
+                <ShieldCheckIcon className="h-4 w-4" />
+                <SidebarLabel>Admin</SidebarLabel>
+              </SidebarItem>
+            ) : null}
           </SidebarSection>
         </SidebarSectionGroup>
       </SidebarContent>

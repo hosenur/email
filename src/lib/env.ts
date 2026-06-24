@@ -19,6 +19,23 @@ export function getRootHostname(rootDomain = getRootDomain()): string {
   return rootDomain.split(":")[0].toLowerCase();
 }
 
+export function getMailDomain(rootDomain = getRootDomain()): string {
+  if (typeof __MAIL_DOMAIN__ !== "undefined") {
+    return __MAIL_DOMAIN__;
+  }
+
+  if (typeof process !== "undefined") {
+    return (
+      process.env.NEXT_PUBLIC_MAIL_DOMAIN ||
+      process.env.VITE_MAIL_DOMAIN ||
+      process.env.MAIL_DOMAIN ||
+      getRootHostname(rootDomain)
+    );
+  }
+
+  return getRootHostname(rootDomain);
+}
+
 export function getRootProtocol(
   rootDomain = getRootDomain(),
 ): "http" | "https" {
